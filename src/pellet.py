@@ -31,13 +31,13 @@ class Pellet(pg.sprite.Sprite):
             self.img = pg.transform.rotate(self.img, 90)
             self.turn_tick = 0
 
-    def direction(self, mouse_pos):
+    def direction(self, mouse_pos) -> tuple[float, float]:
         radians = m.atan2((self.pos.y - mouse_pos[1]), (self.pos.x - mouse_pos[0]))
         x_vel = m.cos(radians) * self.speed
         y_vel = m.sin(radians) * self.speed
         return x_vel, y_vel
 
-    def bound_check(self):
+    def bound_check(self) -> bool:
         return (
                 self.pos.x < 0
                 or self.pos.x > WIN_WIDTH

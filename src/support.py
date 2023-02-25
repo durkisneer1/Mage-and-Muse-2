@@ -2,7 +2,7 @@ from os import walk
 import pygame as pg
 
 
-def import_folder(path, is_alpha: bool = True):
+def import_folder(path, is_alpha: bool = True) -> list[pg.Surface]:
     surf_list = []
     for _, __, img_file in walk(path):
         for image in img_file:

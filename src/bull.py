@@ -40,7 +40,7 @@ class Bull(pg.sprite.Sprite):
         self.rect = self.img.get_rect()
         self.mask = pg.mask.from_surface(self.img)
 
-    def bound(self, dt):
+    def bound(self, dt) -> bool:
         self.rect.topleft = self.pos
         self.pos.x += self.speed * dt
 

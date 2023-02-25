@@ -21,15 +21,13 @@ class Level:
         Maraca(self.maraca_group, False)
 
         # Bull Attack Setup
-        self.spawn_bull = pg.event.custom_type()
-        pg.time.set_timer(self.spawn_bull, 2500)
+        self.ATTACK_EVENT = pg.event.custom_type()
+        pg.time.set_timer(self.ATTACK_EVENT, 2500)
         self.bull_group = pg.sprite.Group()
         self.bull_frames = import_folder("../res/bull")
 
         # Pellet Setup
-        self.proj_delay = (
-            3  # Set higher than limit in user_input method to start first shot on time
-        )
+        self.proj_delay = 3
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
         self.proj_img = pg.image.load("../res/misc/projectile/Projectile.png").convert()
@@ -41,7 +39,7 @@ class Level:
         else:
             self.proj_delay += dt
 
-        if mouse_click[0] and self.proj_delay > 2:
+        if mouse_click[0] and self.proj_delay >= 3:
             Pellet(
                 self.pellet_group,
                 self.player.rect.center,
@@ -67,9 +65,8 @@ class Level:
                     bull.hit()
 
     def update(self, dt, keys, mouse_pos, events, screen):
-        # Event Checking
         for ev in events:
-            if ev.type == self.spawn_bull:
+            if ev.type == self.ATTACK_EVENT:
                 Bull(self.bull_group, self.bull_frames)
 
         # Background Update

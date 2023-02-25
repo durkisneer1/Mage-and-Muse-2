@@ -65,7 +65,6 @@ class Player:
                 self.jump_vel = 36
                 self.on_ground = False
         else:
-            # In Air
             self.pos.y -= self.jump_vel * dt
             self.jump_vel += self.grav * dt
             if self.jump_vel > 0:
@@ -87,8 +86,6 @@ class Player:
         self.bound()
 
     def draw(self, screen: pg.Surface):
-        # scale = m.log2(self.zoom)
-        # img = pg.transform.scale(self.img, (self.img.get_width() * scale, self.img.get_height() * scale))
         screen.blit(self.img, self.pos)
 
 
