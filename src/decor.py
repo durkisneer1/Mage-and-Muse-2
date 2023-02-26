@@ -21,8 +21,7 @@ class Background:
         self.current_frame += dt / 2
         if self.current_frame > len(self.sky_anim_list):
             self.current_frame = 0
-        else:
-            self.sky_img = self.sky_anim_list[int(self.current_frame)]
+        self.sky_img = self.sky_anim_list[int(self.current_frame)]
 
     def movement(self, dt):
         self.pos.x -= self.speed * dt

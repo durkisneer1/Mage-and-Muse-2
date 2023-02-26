@@ -31,28 +31,22 @@ class Player:
         self.facing_right = True
         self.current_frame = 0
 
-    def animate(self, dt):
+    def animate(self, dt: float):
         self.current_frame += dt * 0.8
         if self.current_frame > len(self.frame_list):
             self.current_frame = 0
+
+        if self.facing_right:
+            self.img = self.frame_list[int(self.current_frame)]
         else:
-            if self.facing_right:
-                self.img = self.frame_list[int(self.current_frame)]
-            else:
-                self.img = pg.transform.flip(
-                    self.frame_list[int(self.current_frame)], True, False
-                )
+            self.img = pg.transform.flip(
+                self.frame_list[int(self.current_frame)], True, False
+            )
 
         self.rect = self.img.get_rect()
         self.mask = pg.mask.from_surface(self.img)
 
-    def bound(self):
-        if self.pos.x < 0:
-            self.pos.x = 0
-        elif self.pos.x > WIN_WIDTH - self.img.get_width():
-            self.pos.x = WIN_WIDTH - self.img.get_width()
-
-    def movement(self, dt, keys):
+    def movement(self, dt: float, keys: pg.key.get_pressed):
         self.rect.topleft = self.pos
 
         if self.pos.y > WIN_HEIGHT - self.img.get_height() - self.y_offset:
@@ -83,7 +77,10 @@ class Player:
             if self.on_ground:
                 self.frame_list = self.anim_states["run"]
 
-        self.bound()
+        if self.pos.x < 0:
+            self.pos.x = 0
+        elif self.pos.x > WIN_WIDTH - self.img.get_width():
+            self.pos.x = WIN_WIDTH - self.img.get_width()
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos)
@@ -96,13 +93,11 @@ class Wand:
         self.rot_img = self.img
         self.rect = self.rot_img.get_rect()
 
-    def rotate(self, mouse_pos):
-        radians = m.atan2(
+    def rotate(self, mouse_pos: tuple[int, int]):
+        rad = m.atan2(
             mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery
         )
-        degrees = radians * (180 / m.pi)
-
-        self.rot_img = pg.transform.rotate(self.img, degrees)
+        self.rot_img = pg.transform.rotate(self.img, m.degrees(rad))
 
     def update_pos(self, player_pos: tuple):
         self.rect = self.rot_img.get_rect(center=(player_pos[0], player_pos[1] + 5))

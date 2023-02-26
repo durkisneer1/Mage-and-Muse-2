@@ -22,8 +22,7 @@ class Maraca(pg.sprite.Sprite):
         self.current_frame += dt * 0.8
         if self.current_frame > len(self.frame_list):
             self.current_frame = 0
-        else:
-            self.img = self.frame_list[int(self.current_frame)]
+        self.img = self.frame_list[int(self.current_frame)]
 
     def movement(self, dt):
         self.pos.x += self.speed * dt

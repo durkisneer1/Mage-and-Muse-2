@@ -27,44 +27,58 @@ class Level:
         self.bull_frames = import_folder("../res/bull")
 
         # Pellet Setup
-        self.proj_delay = 3
+        self.max_delay = 2.5
+        self.pellet_delay = self.max_delay
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
-        self.proj_img = pg.image.load("../res/misc/projectile/Projectile.png").convert()
-        self.proj_frames = import_folder("../res/misc/projectile/anim")
+        self.pellet_img = pg.image.load(
+            "../res/misc/projectile/Projectile.png"
+        ).convert()
+        self.pellet_frames = import_folder("../res/misc/projectile/anim")
 
-    def user_input(self, dt, mouse_click, mouse_pos):
-        if self.proj_delay >= 3:
-            self.proj_delay = 3
-        else:
-            self.proj_delay += dt
+    def user_input(
+        self,
+        dt: float,
+        mouse_click: tuple[bool, bool, bool],
+        mouse_pos: tuple[int, int],
+    ):
+        self.pellet_delay += dt
+        if self.pellet_delay >= self.max_delay:
+            self.pellet_delay = self.max_delay
 
-        if mouse_click[0] and self.proj_delay >= 3:
+        if mouse_click[0] and self.pellet_delay >= self.max_delay:
             Pellet(
                 self.pellet_group,
                 self.player.rect.center,
-                self.proj_img,
+                self.pellet_img,
                 mouse_pos,
             )
-            self.proj_delay = 0
+            self.pellet_delay = 0
 
     def collision(self):
-        for maraca in self.maraca_group:
-            for proj in self.pellet_group:
-                if maraca.rect.colliderect(proj.rect):
-                    PelletExplode(self.hit_explosion_group, proj.pos, self.proj_frames)
-                    proj.kill()
-
-        for bull in self.bull_group:
-            if pg.sprite.collide_mask(bull, self.player):
-                print("hit")
-            for proj in self.pellet_group:
-                if bull.rect.colliderect(proj.rect):
-                    PelletExplode(self.hit_explosion_group, proj.pos, self.proj_frames)
-                    proj.kill()
+        for pellet in self.pellet_group:
+            for maraca in self.maraca_group:
+                if maraca.rect.colliderect(pellet.rect):
+                    PelletExplode(
+                        pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
+                    )
+            for bull in self.bull_group:
+                if pg.sprite.collide_mask(bull, self.player):
+                    print("hit")
+                if bull.rect.colliderect(pellet.rect):
+                    PelletExplode(
+                        pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
+                    )
                     bull.hit()
 
-    def update(self, dt, keys, mouse_pos, events, screen):
+    def update(
+        self,
+        dt: float,
+        keys: pg.key.get_pressed,
+        mouse_pos: tuple[int, int],
+        events: pg.event.get,
+        screen: pg.Surface,
+    ):
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
                 Bull(self.bull_group, self.bull_frames)
@@ -101,14 +115,14 @@ class Level:
         for bull in self.bull_group:
             bull.animate(dt)
             bull.draw(screen)
-            if bull.bound(dt):
+            if bull.update(dt):
                 bull.kill()
 
         # Pellet Update
-        for proj in self.pellet_group:
-            proj.rotate(dt)
-            proj.movement(dt)
-            proj.draw(screen)
+        for pellet in self.pellet_group:
+            pellet.rotate(dt)
+            pellet.movement(dt)
+            pellet.draw(screen)
         for expl in self.hit_explosion_group:
             expl.animate(dt)
             expl.draw(screen)
