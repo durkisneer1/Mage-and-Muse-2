@@ -62,6 +62,7 @@ class PelletExplode(pg.sprite.Sprite):
         other.kill()
 
         self.anim_frames = anim_frames
+        self.max_frames = len(self.anim_frames)
         self.img = self.anim_frames[0]
 
         offset_pos = (random.randint(-4, 4), random.randint(-4, 4))
@@ -72,7 +73,7 @@ class PelletExplode(pg.sprite.Sprite):
 
     def animate(self, dt: float) -> None:
         self.current_frame += dt * 2
-        if self.current_frame >= len(self.anim_frames):
+        if self.current_frame >= self.max_frames:
             self.kill()
             return
         self.img = self.anim_frames[int(self.current_frame)]

@@ -8,6 +8,7 @@ class Bull(pg.sprite.Sprite):
         super().__init__(group)
 
         self.frame_list = anim_frames
+        self.max_frames = len(self.frame_list)
         self.img = self.frame_list[0]  # pg.Surface
         self.rect = self.img.get_rect()
         self.mask = pg.mask.from_surface(self.img)
@@ -26,7 +27,7 @@ class Bull(pg.sprite.Sprite):
 
     def animate(self, dt):
         self.current_frame += self.anim_speed * dt
-        if self.current_frame >= len(self.frame_list):
+        if self.current_frame >= self.max_frames:
             self.current_frame = 0
 
         if self.side == "left":

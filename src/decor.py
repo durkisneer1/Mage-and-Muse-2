@@ -12,7 +12,7 @@ class Background:
         )
         self.sky_anim_list = import_folder("../res/desert/sky", False)
         self.sky_img = self.sky_anim_list[0]
-        self.sky_frame_limit = len(self.sky_anim_list)
+        self.max_sky_frames = len(self.sky_anim_list)
         self.current_frame = 0
 
         self.pos = pg.Vector2(0, 0)
@@ -20,7 +20,7 @@ class Background:
 
     def animate_sky(self, dt):
         self.current_frame += dt / 2
-        if self.current_frame >= self.sky_frame_limit:
+        if self.current_frame >= self.max_sky_frames:
             self.current_frame = 0
         self.sky_img = self.sky_anim_list[int(self.current_frame)]
 
