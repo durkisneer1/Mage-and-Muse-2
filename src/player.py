@@ -33,7 +33,7 @@ class Player:
 
     def animate(self, dt: float):
         self.current_frame += dt * 0.8
-        if self.current_frame > len(self.frame_list):
+        if self.current_frame >= len(self.frame_list):
             self.current_frame = 0
 
         if self.facing_right:

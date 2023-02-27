@@ -20,7 +20,7 @@ class Background:
 
     def animate_sky(self, dt):
         self.current_frame += dt / 2
-        if self.current_frame > self.sky_frame_limit:
+        if self.current_frame >= self.sky_frame_limit:
             self.current_frame = 0
         self.sky_img = self.sky_anim_list[int(self.current_frame)]
 

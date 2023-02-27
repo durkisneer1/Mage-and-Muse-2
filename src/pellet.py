@@ -72,7 +72,7 @@ class PelletExplode(pg.sprite.Sprite):
 
     def animate(self, dt: float) -> None:
         self.current_frame += dt * 2
-        if self.current_frame > len(self.anim_frames):
+        if self.current_frame >= len(self.anim_frames):
             self.kill()
             return
         self.img = self.anim_frames[int(self.current_frame)]

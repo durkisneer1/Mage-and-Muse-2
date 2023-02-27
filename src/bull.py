@@ -26,7 +26,7 @@ class Bull(pg.sprite.Sprite):
 
     def animate(self, dt):
         self.current_frame += self.anim_speed * dt
-        if self.current_frame > len(self.frame_list):
+        if self.current_frame >= len(self.frame_list):
             self.current_frame = 0
 
         if self.side == "left":
