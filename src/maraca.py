@@ -16,7 +16,8 @@ class Maraca(pg.sprite.Sprite):
         start_x = 0 if brother else WIN_WIDTH - self.img.get_width()
         self.pos = pg.Vector3(start_x, WIN_HEIGHT - self.frame_list[0].get_height(), 0)
 
-        self.speed = 6 if brother else -6
+        self.speed = 6
+        self.multiplier = 1 if brother else -1
         self.current_frame = 0
         self.angle = 0
         self.z_pos = 0
@@ -28,18 +29,21 @@ class Maraca(pg.sprite.Sprite):
         self.img = self.frame_list[int(self.current_frame)]
 
     def movement(self, dt: float):
+        self.angle += dt * self.speed * self.multiplier
         rad = m.radians(self.angle)
-        self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 2)
-        self.pos.z = m.cos(rad) * self.speed
-        self.angle += dt * self.speed
+        self.pos.z = m.cos(rad) * self.multiplier
+        self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 2.5)
 
-    def draw_hitbox(self):
+        self.img = pg.transform.scale_by(self.img, ((self.pos.z + 1) / 4) + 0.5)
+
+    def hitbox(self):
         box_height = self.img.get_height() / 3
         box_width = self.img.get_width() - (self.img.get_width() / 5)
         x_offset = self.pos.x + (box_width / 8)
         y_offset = self.pos.y + (box_height / 8)
-        self.rect = pg.Rect((x_offset, y_offset), (box_width, box_height))
+        self.rect.topleft = x_offset, y_offset
+        self.rect.size = box_width, box_height
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos.xy)
-        self.draw_hitbox()
+        self.hitbox()

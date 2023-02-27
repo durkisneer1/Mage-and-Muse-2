@@ -59,7 +59,7 @@ class Level:
     def collision(self):
         for pellet in self.pellet_group:
             for maraca in self.maraca_group:
-                if maraca.rect.colliderect(pellet.rect):
+                if maraca.rect.colliderect(pellet.rect) and maraca.pos.z > 0:
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
