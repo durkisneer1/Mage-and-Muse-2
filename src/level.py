@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 from support import import_folder
 from player import Player, Wand
 from maraca import Maraca
@@ -81,7 +82,12 @@ class Level:
     ):
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
-                Bull(self.bull_group, self.bull_frames)
+                attack_type = random.randint(0, 1)
+                match attack_type:
+                    case 0:
+                        Bull(self.bull_group, self.bull_frames)
+                    case 1:
+                        pass
 
         # Background Update
         self.background.movement(dt)
@@ -92,10 +98,11 @@ class Level:
         self.background.draw_wrapped(screen, 2, 4)
 
         # Maraca Update
-        for mar in self.maraca_group:
-            mar.animate(dt)
-            mar.movement(dt)
-            mar.draw(screen)
+        sorted_maracas = sorted(self.maraca_group.sprites(), key=lambda m: m.pos.z)
+        for maraca in sorted_maracas:
+            maraca.animate(dt)
+            maraca.movement(dt)
+            maraca.draw(screen)
 
         # Player Update
         self.player.animate(dt)

@@ -1,5 +1,5 @@
 import pygame as pg
-import random as rand
+import random
 from constants import *
 
 
@@ -64,7 +64,7 @@ class PelletExplode(pg.sprite.Sprite):
         self.anim_frames = anim_frames
         self.img = self.anim_frames[0]
 
-        offset_pos = (rand.randint(-4, 4), rand.randint(-4, 4))
+        offset_pos = (random.randint(-4, 4), random.randint(-4, 4))
         new_spawn = (spawn_pos[0] + offset_pos[0], spawn_pos[1] + offset_pos[1])
         self.pos = pg.Vector2(new_spawn)
 

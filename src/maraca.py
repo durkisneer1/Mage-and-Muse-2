@@ -1,6 +1,7 @@
 import pygame as pg
 from constants import WIN_WIDTH, WIN_HEIGHT
 from support import import_folder
+import math as m
 
 
 class Maraca(pg.sprite.Sprite):
@@ -13,25 +14,24 @@ class Maraca(pg.sprite.Sprite):
         self.rect = self.img.get_rect()
 
         start_x = 0 if brother else WIN_WIDTH - self.img.get_width()
-        self.pos = pg.Vector2(start_x, WIN_HEIGHT - self.frame_list[0].get_height())
+        self.pos = pg.Vector3(start_x, WIN_HEIGHT - self.frame_list[0].get_height(), 0)
 
-        self.speed = 7 if brother else -7
+        self.speed = 6 if brother else -6
         self.current_frame = 0
+        self.angle = 0
+        self.z_pos = 0
 
-    def animate(self, dt):
+    def animate(self, dt: float):
         self.current_frame += dt * 0.8
         if self.current_frame > len(self.frame_list):
             self.current_frame = 0
         self.img = self.frame_list[int(self.current_frame)]
 
-    def movement(self, dt):
-        self.pos.x += self.speed * dt
-        if self.pos.x < 0:
-            self.pos.x = 0
-            self.speed *= -1
-        elif self.pos.x > WIN_WIDTH - self.img.get_width():
-            self.pos.x = WIN_WIDTH - self.img.get_width()
-            self.speed *= -1
+    def movement(self, dt: float):
+        rad = m.radians(self.angle)
+        self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 2)
+        self.pos.z = m.cos(rad) * self.speed
+        self.angle += dt * self.speed
 
     def draw_hitbox(self):
         box_height = self.img.get_height() / 3
@@ -41,5 +41,5 @@ class Maraca(pg.sprite.Sprite):
         self.rect = pg.Rect((x_offset, y_offset), (box_width, box_height))
 
     def draw(self, screen: pg.Surface):
-        screen.blit(self.img, self.pos)
+        screen.blit(self.img, self.pos.xy)
         self.draw_hitbox()

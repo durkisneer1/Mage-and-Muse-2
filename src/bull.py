@@ -1,5 +1,5 @@
 import pygame as pg
-import random as rand
+import random
 from constants import *
 
 
@@ -12,7 +12,7 @@ class Bull(pg.sprite.Sprite):
         self.rect = self.img.get_rect()
         self.mask = pg.mask.from_surface(self.img)
 
-        self.side = rand.choice(["left", "right"])
+        self.side = random.choice(["left", "right"])
         start_x = -self.img.get_width() if self.side == "left" else WIN_WIDTH
         self.pos = pg.Vector2(
             start_x, WIN_HEIGHT - self.frame_list[0].get_height() - 25
