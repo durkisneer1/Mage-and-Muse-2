@@ -14,22 +14,27 @@ class Player:
             "idle": import_folder("../res/mage/idle"),
         }
 
-        self.frame_list = self.anim_states["idle"]
-        self.img = self.anim_states["idle"][0]
+        self.status = "idle"
+        self.frame_list = self.anim_states[self.status]
+        self.current_frame = 0
+        self.img = self.frame_list[self.current_frame]
         self.y_offset = 27  # Train top offset
         self.pos = pg.Vector2(
             WIN_WIDTH / 2, WIN_HEIGHT - self.img.get_height() - self.y_offset
         )
         self.rect = self.img.get_rect(topleft=self.pos)
-        self.mask = pg.mask.from_surface(self.img)
 
         self.jump_vel = 0
         self.grav = -12
         self.on_ground = True
+        self.direction = pg.Vector2()
 
         self.speed = 10
         self.facing_right = True
-        self.current_frame = 0
+
+        self.dash_time = 0
+        self.dashed = False
+        self.dash_scalar = 1
 
     def animate(self, dt: float):
         self.current_frame += dt * 0.8
@@ -44,9 +49,9 @@ class Player:
             )
 
         self.rect = self.img.get_rect()
-        self.mask = pg.mask.from_surface(self.img)
 
     def movement(self, dt: float, keys: pg.key.get_pressed):
+        current_time = pg.time.get_ticks()
         self.rect.topleft = self.pos
 
         if self.pos.y > WIN_HEIGHT - self.img.get_height() - self.y_offset:
@@ -54,7 +59,7 @@ class Player:
             self.on_ground = True
 
         if self.on_ground:
-            self.frame_list = self.anim_states["idle"]
+            self.status = "idle"
             if keys[pg.K_SPACE]:
                 self.jump_vel = 36
                 self.on_ground = False
@@ -62,21 +67,32 @@ class Player:
             self.pos.y -= self.jump_vel * dt
             self.jump_vel += self.grav * dt
             if self.jump_vel > 0:
-                self.frame_list = self.anim_states["jump"]
+                self.status = "jump"
             else:
-                self.frame_list = self.anim_states["fall"]
+                self.status = "fall"
 
+        self.direction.x = 0
         if keys[pg.K_a]:
-            self.pos.x -= self.speed * dt
+            self.direction.x = -1
             self.facing_right = False
             if self.on_ground:
-                self.frame_list = self.anim_states["run"]
+                self.status = "run"
         if keys[pg.K_d]:
-            self.pos.x += self.speed * dt
+            self.direction.x = 1
             self.facing_right = True
             if self.on_ground:
-                self.frame_list = self.anim_states["run"]
+                self.status = "run"
+        if keys[pg.K_LSHIFT] and not self.dashed and current_time - self.dash_time > 500:
+            self.dash_time = pg.time.get_ticks()
+            self.dashed = True
 
+        self.dash_scalar = 10 if self.dashed else 1
+        if self.dashed and current_time - self.dash_time > 50:
+            self.dashed = False
+
+        self.frame_list = self.anim_states[self.status]
+
+        self.pos.x += self.direction.x * self.speed * self.dash_scalar * dt
         if self.pos.x < 0:
             self.pos.x = 0
         elif self.pos.x > WIN_WIDTH - self.img.get_width():

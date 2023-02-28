@@ -64,7 +64,7 @@ class Level:
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
             for bull in self.bull_group:
-                if pg.sprite.collide_mask(bull, self.player):
+                if bull.rect.colliderect(self.player.rect):
                     print("hit")
                 if bull.rect.colliderect(pellet.rect):
                     PelletExplode(
@@ -82,7 +82,7 @@ class Level:
     ):
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
-                attack_type = random.randint(0, 1)
+                attack_type = 0  # random.randint(0, 1)
                 match attack_type:
                     case 0:
                         Bull(self.bull_group, self.bull_frames)

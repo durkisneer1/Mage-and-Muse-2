@@ -32,7 +32,7 @@ class Maraca(pg.sprite.Sprite):
         self.angle += dt * self.speed * self.multiplier
         rad = m.radians(self.angle)
         self.pos.z = m.cos(rad) * self.multiplier
-        self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 2.5)
+        self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() * 0.4)
 
         self.img = pg.transform.scale_by(self.img, ((self.pos.z + 1) / 4) + 0.5)
 
