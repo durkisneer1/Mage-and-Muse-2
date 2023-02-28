@@ -57,15 +57,16 @@ class Level:
             self.pellet_delay = 0
 
     def collision(self):
-        for pellet in self.pellet_group:
-            for maraca in self.maraca_group:
+        for maraca in self.maraca_group:
+            for pellet in self.pellet_group:
                 if maraca.rect.colliderect(pellet.rect) and maraca.pos.z > 0:
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
-            for bull in self.bull_group:
-                if bull.rect.colliderect(self.player.rect):
-                    print("hit")
+        for bull in self.bull_group:
+            if bull.rect.colliderect(self.player.rect) and not self.player.on_cooldown:
+                self.player.hit()
+            for pellet in self.pellet_group:
                 if bull.rect.colliderect(pellet.rect):
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames

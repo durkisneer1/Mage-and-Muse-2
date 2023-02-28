@@ -18,7 +18,10 @@ class Bull(pg.sprite.Sprite):
             start_x, WIN_HEIGHT - self.frame_list[0].get_height() - 25
         )
         self.pos_offset = 12, 5
-        hitbox_size = (self.img.get_width() - self.pos_offset[0], self.img.get_height() - self.pos_offset[1])
+        hitbox_size = (
+            self.img.get_width() - self.pos_offset[0],
+            self.img.get_height() - self.pos_offset[1],
+        )
         self.rect = pg.Rect(self.pos, hitbox_size)
 
         self.speed = 14 if self.side == "left" else -14
@@ -41,7 +44,10 @@ class Bull(pg.sprite.Sprite):
 
     def update(self, dt) -> bool:
         if self.side == "left":
-            self.rect.topleft = (self.pos.x + self.pos_offset[0], self.pos.y + self.pos_offset[1])
+            self.rect.topleft = (
+                self.pos.x + self.pos_offset[0],
+                self.pos.y + self.pos_offset[1],
+            )
         elif self.side == "right":
             self.rect.topleft = (self.pos.x, self.pos.y + self.pos_offset[1])
         self.pos.x += self.speed * dt
@@ -54,4 +60,5 @@ class Bull(pg.sprite.Sprite):
             self.kill()
 
     def draw(self, screen: pg.Surface):
+        pg.draw.rect(screen, "green", self.rect)
         screen.blit(self.img, self.pos)

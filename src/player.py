@@ -24,10 +24,9 @@ class Player:
         )
         self.rect = self.img.get_rect(topleft=self.pos)
 
-        self.jump_vel = 0
         self.grav = -12
         self.on_ground = True
-        self.direction = pg.Vector2()
+        self.direction = pg.Vector2(0, 0)
 
         self.speed = 10
         self.facing_right = True
@@ -35,6 +34,10 @@ class Player:
         self.dash_time = 0
         self.dashed = False
         self.dash_scalar = 1
+
+        self.stunned = False
+        self.hit_time = 0
+        self.on_cooldown = False
 
     def animate(self, dt: float):
         self.current_frame += dt * 0.8
@@ -50,6 +53,10 @@ class Player:
 
         self.rect = self.img.get_rect()
 
+    def jump(self, scalar: float = 1):
+        self.direction.y = 36 * scalar
+        self.on_ground = False
+
     def movement(self, dt: float, keys: pg.key.get_pressed):
         current_time = pg.time.get_ticks()
         self.rect.topleft = self.pos
@@ -59,38 +66,28 @@ class Player:
             self.on_ground = True
 
         if self.on_ground:
-            self.status = "idle"
+            self.stunned = False
             if keys[pg.K_SPACE]:
-                self.jump_vel = 36
-                self.on_ground = False
+                self.jump()
         else:
-            self.pos.y -= self.jump_vel * dt
-            self.jump_vel += self.grav * dt
-            if self.jump_vel > 0:
-                self.status = "jump"
-            else:
-                self.status = "fall"
+            self.direction.y += self.grav * dt
+            self.pos.y -= self.direction.y * dt
 
-        self.direction.x = 0
         if keys[pg.K_a]:
             self.direction.x = -1
             self.facing_right = False
-            if self.on_ground:
-                self.status = "run"
-        if keys[pg.K_d]:
+        elif keys[pg.K_d]:
             self.direction.x = 1
             self.facing_right = True
-            if self.on_ground:
-                self.status = "run"
+        else:
+            self.direction.x = 0
+
         if keys[pg.K_LSHIFT] and not self.dashed and current_time - self.dash_time > 500:
             self.dash_time = pg.time.get_ticks()
             self.dashed = True
-
         self.dash_scalar = 10 if self.dashed else 1
         if self.dashed and current_time - self.dash_time > 50:
             self.dashed = False
-
-        self.frame_list = self.anim_states[self.status]
 
         self.pos.x += self.direction.x * self.speed * self.dash_scalar * dt
         if self.pos.x < 0:
@@ -98,7 +95,29 @@ class Player:
         elif self.pos.x > WIN_WIDTH - self.img.get_width():
             self.pos.x = WIN_WIDTH - self.img.get_width()
 
+        if current_time - self.hit_time > 1000 and self.on_cooldown:
+            self.on_cooldown = False
+
+    def get_status(self):
+        if self.on_ground:
+            self.status = "idle" if self.direction.x == 0 else "run"
+        else:
+            if self.direction.y > 0 and not self.stunned:
+                self.status = "jump"
+            # elif self.direction.y > 0 and self.stunned:
+            #     self.status = "hit"
+            else:
+                self.status = "fall"
+        self.frame_list = self.anim_states[self.status]
+
+    def hit(self):
+        self.jump(scalar=0.75)
+        self.hit_time = pg.time.get_ticks()
+        self.stunned = True
+        self.on_cooldown = True
+
     def draw(self, screen: pg.Surface):
+        self.get_status()
         screen.blit(self.img, self.pos)
 
 
