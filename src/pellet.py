@@ -9,7 +9,7 @@ class Pellet(pg.sprite.Sprite):
         groups: pg.sprite.Group,
         spawn_pos: tuple,
         img: pg.Surface,
-        mouse_pos: tuple,
+        mouse_pos: tuple[int, int],
     ):
         super().__init__(groups)
 

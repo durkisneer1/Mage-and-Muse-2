@@ -1,5 +1,5 @@
 import pygame as pg
-import random
+import random  # NOQA
 from support import import_folder
 from player import Player, Wand
 from maraca import Maraca
@@ -106,8 +106,7 @@ class Level:
             maraca.draw(screen)
 
         # Player Update
-        self.player.animate(dt)
-        self.player.movement(dt, keys)
+        self.player.update(dt, keys)
         self.player.draw(screen)
 
         # Wand Update

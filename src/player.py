@@ -35,9 +35,10 @@ class Player:
         self.dashed = False
         self.dash_scalar = 1
 
-        self.stunned = False
-        self.hit_time = 0
         self.on_cooldown = False
+        self.hit_time = 0
+        self.in_air = False
+        self.air_time = 0
 
     def animate(self, dt: float):
         self.current_frame += dt * 0.8
@@ -51,28 +52,27 @@ class Player:
                 self.frame_list[int(self.current_frame)], True, False
             )
 
-        self.rect = self.img.get_rect()
-
     def jump(self, scalar: float = 1):
         self.direction.y = 36 * scalar
         self.on_ground = False
 
-    def movement(self, dt: float, keys: pg.key.get_pressed):
+    def update(self, dt: float, keys: list[bool]):
+        # Timer Setup
         current_time = pg.time.get_ticks()
-        self.rect.topleft = self.pos
+        if self.on_cooldown and current_time - self.hit_time > 1000:
+            self.on_cooldown = False
+        if self.in_air and current_time - self.air_time > 400:
+            self.in_air = False
 
-        if self.pos.y > WIN_HEIGHT - self.img.get_height() - self.y_offset:
-            self.pos.y = WIN_HEIGHT - self.img.get_height() - self.y_offset
-            self.on_ground = True
-
+        # Vertical Movement
         if self.on_ground:
-            self.stunned = False
             if keys[pg.K_SPACE]:
                 self.jump()
         else:
             self.direction.y += self.grav * dt
             self.pos.y -= self.direction.y * dt
 
+        # Horizontal Movement
         if keys[pg.K_a]:
             self.direction.x = -1
             self.facing_right = False
@@ -81,43 +81,53 @@ class Player:
             self.facing_right = True
         else:
             self.direction.x = 0
+        self.dash_scalar = 10 if self.dashed else 1
+        self.pos.x += self.direction.x * self.speed * self.dash_scalar * dt
 
-        if keys[pg.K_LSHIFT] and not self.dashed and current_time - self.dash_time > 500:
+        # Dashing
+        if (
+            keys[pg.K_LSHIFT]
+            and not self.dashed
+            and current_time - self.dash_time > 500
+        ):
             self.dash_time = pg.time.get_ticks()
             self.dashed = True
-        self.dash_scalar = 10 if self.dashed else 1
         if self.dashed and current_time - self.dash_time > 50:
             self.dashed = False
 
-        self.pos.x += self.direction.x * self.speed * self.dash_scalar * dt
-        if self.pos.x < 0:
-            self.pos.x = 0
-        elif self.pos.x > WIN_WIDTH - self.img.get_width():
-            self.pos.x = WIN_WIDTH - self.img.get_width()
+        # Horizontal Bounding
+        self.pos.x = min(max(self.pos.x, 0), WIN_WIDTH - self.img.get_width())
 
-        if current_time - self.hit_time > 1000 and self.on_cooldown:
-            self.on_cooldown = False
+        # Vertical Bounding
+        if self.pos.y > WIN_HEIGHT - self.img.get_height() - self.y_offset:
+            self.pos.y = WIN_HEIGHT - self.img.get_height() - self.y_offset
+            self.on_ground = True
 
-    def get_status(self):
+        # Hitbox Alignment
+        self.rect.topleft = self.pos
+
+        self.update_status()
+        self.animate(dt)
+
+    def update_status(self):
         if self.on_ground:
             self.status = "idle" if self.direction.x == 0 else "run"
         else:
-            if self.direction.y > 0 and not self.stunned:
-                self.status = "jump"
-            # elif self.direction.y > 0 and self.stunned:
-            #     self.status = "hit"
+            if self.direction.y > 0:
+                self.status = "hit" if self.in_air else "jump"
             else:
                 self.status = "fall"
         self.frame_list = self.anim_states[self.status]
 
     def hit(self):
         self.jump(scalar=0.75)
-        self.hit_time = pg.time.get_ticks()
-        self.stunned = True
         self.on_cooldown = True
+        self.in_air = True
+        hit_time = pg.time.get_ticks()
+        self.hit_time = hit_time
+        self.air_time = hit_time
 
     def draw(self, screen: pg.Surface):
-        self.get_status()
         screen.blit(self.img, self.pos)
 
 

@@ -6,8 +6,8 @@ pg.init()
 
 screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)
 pg.display.set_caption("Mage and Muse 2")
-
 clock = pg.time.Clock()
+
 level = Level()
 
 
