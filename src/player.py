@@ -120,10 +120,10 @@ class Player:
         self.frame_list = self.anim_states[self.status]
 
     def hit(self):
+        hit_time = pg.time.get_ticks()
         self.jump(scalar=0.75)
         self.on_cooldown = True
         self.in_air = True
-        hit_time = pg.time.get_ticks()
         self.hit_time = hit_time
         self.air_time = hit_time
 

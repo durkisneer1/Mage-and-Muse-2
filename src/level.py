@@ -6,6 +6,7 @@ from maraca import Maraca
 from bull import Bull
 from decor import Background, Train
 from pellet import Pellet, PelletExplode
+from skull import Skull
 
 
 class Level:
@@ -15,11 +16,12 @@ class Level:
         self.wand = Wand()
         self.background = Background()
         self.train = Train()
+        self.skull = Skull()
 
         # Maraca Setup
-        self.maraca_group = pg.sprite.Group()
-        Maraca(self.maraca_group, True)
-        Maraca(self.maraca_group, False)
+        self.boss_group = pg.sprite.Group()
+        Maraca(self.boss_group, True)
+        Maraca(self.boss_group, False)
 
         # Bull Attack Setup
         self.ATTACK_EVENT = pg.event.custom_type()
@@ -57,9 +59,9 @@ class Level:
             self.pellet_delay = 0
 
     def collision(self):
-        for maraca in self.maraca_group:
+        for boss in self.boss_group:
             for pellet in self.pellet_group:
-                if maraca.rect.colliderect(pellet.rect) and maraca.pos.z > 0:
+                if boss.rect.colliderect(pellet.rect) and boss.pos.z >= 0:
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
@@ -98,12 +100,16 @@ class Level:
         self.background.draw_wrapped(screen, 1, 1)
         self.background.draw_wrapped(screen, 2, 4)
 
+        # Skull Update
+        self.skull.move(dt)
+        self.skull.draw(screen)
+
         # Maraca Update
-        sorted_maracas = sorted(self.maraca_group.sprites(), key=lambda m: m.pos.z)
-        for maraca in sorted_maracas:
-            maraca.animate(dt)
-            maraca.movement(dt)
-            maraca.draw(screen)
+        sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
+        for boss in sorted_bosses:
+            boss.animate(dt)
+            boss.movement(dt)
+            boss.draw(screen)
 
         # Player Update
         self.player.update(dt, keys)
