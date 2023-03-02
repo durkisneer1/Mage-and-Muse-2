@@ -22,7 +22,7 @@ class Player:
         self.pos = pg.Vector2(
             WIN_WIDTH / 2, WIN_HEIGHT - self.img.get_height() - self.y_offset
         )
-        self.rect = self.img.get_rect(topleft=self.pos)
+        self.rect = self.img.get_rect(midtop=self.pos)
 
         self.grav = -12
         self.on_ground = True
@@ -104,7 +104,7 @@ class Player:
             self.on_ground = True
 
         # Hitbox Alignment
-        self.rect.topleft = self.pos
+        self.rect.midtop = self.pos
 
         self.update_status()
         self.animate(dt)
@@ -128,7 +128,8 @@ class Player:
         self.air_time = hit_time
 
     def draw(self, screen: pg.Surface):
-        screen.blit(self.img, self.pos)
+        pg.draw.rect(screen, "green", self.rect)
+        screen.blit(self.img, self.rect)
 
 
 class Wand:

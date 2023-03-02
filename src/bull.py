@@ -62,4 +62,5 @@ class Bull(pg.sprite.Sprite):
             self.kill()
 
     def draw(self, screen: pg.Surface):
+        pg.draw.rect(screen, "red", self.rect)
         screen.blit(self.img, self.pos)
