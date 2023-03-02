@@ -144,7 +144,8 @@ class Wand:
         )
         self.rot_img = pg.transform.rotate(self.img, m.degrees(rad))
 
-    def update_pos(self, player_pos: tuple):
+    def update(self, player_pos: tuple, mouse_pos: tuple[int, int]):
+        self.rotate(mouse_pos)
         self.rect = self.rot_img.get_rect(center=(player_pos[0], player_pos[1] + 5))
 
     def draw(self, screen: pg.Surface):

@@ -43,6 +43,8 @@ class Bull(pg.sprite.Sprite):
             )
 
     def update(self, dt) -> bool:
+        self.animate(dt)
+
         if self.side == "left":
             self.rect.topleft = (
                 self.pos.x + self.pos_offset[0],

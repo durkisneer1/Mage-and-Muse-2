@@ -48,7 +48,7 @@ class Train:
         self.speed = 3
         self.bounce_tick = 0
 
-    def movement(self, dt):
+    def update(self, dt):
         self.pos.x += self.speed * dt
         self.bounce_tick += dt * 1.5
         if self.bounce_tick > 1:

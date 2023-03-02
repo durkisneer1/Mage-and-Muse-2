@@ -111,26 +111,23 @@ class Level:
         self.player.draw(screen)
 
         # Wand Update
-        self.wand.rotate(mouse_pos)
-        self.wand.update_pos(self.player.rect.center)
+        self.wand.update(self.player.rect.center, mouse_pos)
         self.wand.draw(screen)
 
         # Train Update
-        self.train.movement(dt)
+        self.train.update(dt)
         self.train.draw(screen)
 
         # Bull Update
         for bull in self.bull_group:
-            bull.animate(dt)
-            bull.draw(screen)
             if bull.update(dt):
                 bull.kill()
+            bull.draw(screen)
 
         # Pellet Update
         for pellet in self.pellet_group:
-            pellet.rotate(dt)
-            pellet.movement(dt)
+            pellet.update(dt)
             pellet.draw(screen)
         for expl in self.hit_explosion_group:
-            expl.animate(dt)
+            expl.update(dt)
             expl.draw(screen)

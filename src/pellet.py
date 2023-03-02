@@ -35,7 +35,9 @@ class Pellet(pg.sprite.Sprite):
         unit_vec = pg.Vector2(xy_diff).normalize() * self.speed
         return unit_vec
 
-    def movement(self, dt: float):
+    def update(self, dt: float):
+        self.rotate(dt)
+
         self.pos += self.vel * dt
         self.rect.topleft = self.pos
         if (
@@ -71,7 +73,7 @@ class PelletExplode(pg.sprite.Sprite):
 
         self.current_frame = 0
 
-    def animate(self, dt: float) -> None:
+    def update(self, dt: float) -> None:
         self.current_frame += dt * 2
         if self.current_frame >= self.max_frames:
             self.kill()
