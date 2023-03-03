@@ -93,12 +93,8 @@ class Level:
                         pass
 
         # Background Update
-        self.background.movement(dt)
-        self.background.animate_sky(dt)
-        self.background.draw_sky(screen)
-        self.background.draw_wrapped(screen, 0, 2)
-        self.background.draw_wrapped(screen, 1, 1)
-        self.background.draw_wrapped(screen, 2, 4)
+        self.background.update(dt)
+        self.background.draw(screen)
 
         # Maraca/Skull Update
         sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)

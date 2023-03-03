@@ -41,16 +41,14 @@ class Player:
         self.air_time = 0
 
     def animate(self, dt: float):
-        self.current_frame += dt * 0.8
-        if self.current_frame >= len(self.frame_list):
-            self.current_frame = 0
-
+        self.current_frame %= len(self.frame_list)
         if self.facing_right:
             self.img = self.frame_list[int(self.current_frame)]
         else:
             self.img = pg.transform.flip(
                 self.frame_list[int(self.current_frame)], True, False
             )
+        self.current_frame += dt * 0.8
 
     def jump(self, scalar: float = 1):
         self.direction.y = 36 * scalar
@@ -128,7 +126,6 @@ class Player:
         self.air_time = hit_time
 
     def draw(self, screen: pg.Surface):
-        pg.draw.rect(screen, "green", self.rect)
         screen.blit(self.img, self.rect)
 
 

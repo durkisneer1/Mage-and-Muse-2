@@ -23,10 +23,9 @@ class Maraca(pg.sprite.Sprite):
         self.z_pos = 0
 
     def animate(self, dt: float):
-        self.current_frame += dt * 0.8
-        if self.current_frame >= len(self.frame_list):
-            self.current_frame = 0
+        self.current_frame %= len(self.frame_list)
         self.img = self.frame_list[int(self.current_frame)]
+        self.current_frame += dt * 0.8
 
     def update(self, dt: float):
         self.animate(dt)

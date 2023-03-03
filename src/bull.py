@@ -31,16 +31,14 @@ class Bull(pg.sprite.Sprite):
         self.health = 2
 
     def animate(self, dt):
-        self.current_frame += self.anim_speed * dt
-        if self.current_frame >= self.max_frames:
-            self.current_frame = 0
-
+        self.current_frame %= self.max_frames
         if self.side == "left":
             self.img = self.frame_list[int(self.current_frame)]
         else:
             self.img = pg.transform.flip(
                 self.frame_list[int(self.current_frame)], True, False
             )
+        self.current_frame += self.anim_speed * dt
 
     def update(self, dt) -> bool:
         self.animate(dt)
@@ -62,5 +60,4 @@ class Bull(pg.sprite.Sprite):
             self.kill()
 
     def draw(self, screen: pg.Surface):
-        pg.draw.rect(screen, "red", self.rect)
         screen.blit(self.img, self.pos)
