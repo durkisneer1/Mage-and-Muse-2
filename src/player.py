@@ -14,8 +14,7 @@ class Player:
             "idle": import_folder("../res/mage/idle"),
         }
 
-        self.status = "idle"
-        self.frame_list = self.anim_states[self.status]
+        self.frame_list = self.anim_states["idle"]
         self.current_frame = 0
         self.img = self.frame_list[self.current_frame]
         self.y_offset = 27  # Train top offset
@@ -24,7 +23,7 @@ class Player:
         )
         self.rect = self.img.get_rect(midtop=self.pos)
 
-        self.grav = -12
+        self.grav = 12
         self.on_ground = True
         self.direction = pg.Vector2(0, 0)
 
@@ -51,7 +50,7 @@ class Player:
         self.current_frame += dt * 0.8
 
     def jump(self, scalar: float = 1):
-        self.direction.y = 36 * scalar
+        self.direction.y = -36 * scalar
         self.on_ground = False
 
     def update(self, dt: float, keys: list[bool]):
@@ -68,7 +67,7 @@ class Player:
                 self.jump()
         else:
             self.direction.y += self.grav * dt
-            self.pos.y -= self.direction.y * dt
+            self.pos.y += self.direction.y * dt
 
         # Horizontal Movement
         if keys[pg.K_a]:
@@ -109,13 +108,13 @@ class Player:
 
     def update_status(self):
         if self.on_ground:
-            self.status = "idle" if self.direction.x == 0 else "run"
+            status = "idle" if self.direction.x == 0 else "run"
         else:
-            if self.direction.y > 0:
-                self.status = "hit" if self.in_air else "jump"
+            if self.direction.y < 0:
+                status = "hit" if self.in_air else "jump"
             else:
-                self.status = "fall"
-        self.frame_list = self.anim_states[self.status]
+                status = "fall"
+        self.frame_list = self.anim_states[status]
 
     def hit(self):
         hit_time = pg.time.get_ticks()

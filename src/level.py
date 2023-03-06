@@ -7,6 +7,7 @@ from bull import Bull
 from decor import Background, Train
 from pellet import Pellet, PelletExplode
 from skull import Skull
+from enums import AttackType
 
 
 class Level:
@@ -85,12 +86,9 @@ class Level:
     ):
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
-                attack_type = 0  # random.randint(0, 1)
-                match attack_type:
-                    case 0:
-                        Bull(self.bull_group, self.bull_frames)
-                    case 1:
-                        pass
+                attack_type = random.choice(list(AttackType))
+                if attack_type == AttackType.BULL:
+                    Bull(self.bull_group, self.bull_frames)
 
         # Background Update
         self.background.update(dt)

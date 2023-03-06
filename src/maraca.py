@@ -1,3 +1,5 @@
+import functools
+
 import pygame as pg
 from constants import WIN_WIDTH, WIN_HEIGHT
 from support import import_folder
@@ -22,6 +24,11 @@ class Maraca(pg.sprite.Sprite):
         self.angle = 0
         self.z_pos = 0
 
+    @functools.cache
+    @staticmethod
+    def cache_scaled(img, factor):
+        return pg.transform.scale_by(img, factor)
+
     def animate(self, dt: float):
         self.current_frame %= len(self.frame_list)
         self.img = self.frame_list[int(self.current_frame)]
@@ -35,7 +42,7 @@ class Maraca(pg.sprite.Sprite):
         self.pos.z = m.cos(rad) * self.multiplier
         self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 3)
 
-        self.img = pg.transform.scale_by(self.img, ((self.pos.z / 4) + 0.75))
+        self.img = Maraca.cache_scaled(self.img, ((self.pos.z / 4) + 0.75))
 
     def hitbox(self):
         box_height = self.img.get_height() / 3
