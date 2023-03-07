@@ -58,6 +58,7 @@ class Train:
         x_pos = m.sin(rad) + self.x_offset
         self.pos.x = x_pos
         self.angle += dt * 250
+        self.angle %= 360
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos)

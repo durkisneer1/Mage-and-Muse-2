@@ -37,6 +37,7 @@ class Skull(pg.sprite.Sprite):
         self.pos.y = (m.sin(rad) * 15) + self.y_offset
         self.rect.center = self.pos.xy
         self.angle += self.speed * dt
+        self.angle %= 360
 
         for pos in self.flower_pos:
             pos.y = self.pos.y - 3

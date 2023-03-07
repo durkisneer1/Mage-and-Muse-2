@@ -1,13 +1,14 @@
 import pygame as pg
 import random  # NOQA
 from support import import_folder
+from decor import Background, Train
+from enums import AttackType
 from player import Player, Wand
 from maraca import Maraca
 from bull import Bull
-from decor import Background, Train
 from pellet import Pellet, PelletExplode
 from skull import Skull
-from enums import AttackType
+from taco import Taco
 
 
 class Level:
@@ -27,8 +28,9 @@ class Level:
         # Bull Attack Setup
         self.ATTACK_EVENT = pg.event.custom_type()
         pg.time.set_timer(self.ATTACK_EVENT, 2500)
-        self.bull_group = pg.sprite.Group()
+        self.attack_group = pg.sprite.Group()
         self.bull_frames = import_folder("../res/bull")
+        self.taco_img = pg.image.load("../res/taco/taco.png").convert_alpha()
 
         # Pellet Setup
         self.max_delay = 2.5
@@ -66,15 +68,18 @@ class Level:
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
-        for bull in self.bull_group:
-            if bull.rect.colliderect(self.player.rect) and not self.player.on_cooldown:
+        for attack in self.attack_group:
+            if (
+                attack.rect.colliderect(self.player.rect)
+                and not self.player.on_cooldown
+            ):
                 self.player.hit()
             for pellet in self.pellet_group:
-                if bull.rect.colliderect(pellet.rect):
+                if attack.rect.colliderect(pellet.rect):
                     PelletExplode(
                         pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
                     )
-                    bull.hit()
+                    attack.hit()
 
     def update(
         self,
@@ -88,7 +93,9 @@ class Level:
             if ev.type == self.ATTACK_EVENT:
                 attack_type = random.choice(list(AttackType))
                 if attack_type == AttackType.BULL:
-                    Bull(self.bull_group, self.bull_frames)
+                    Bull(self.attack_group, self.bull_frames)
+                elif attack_type == AttackType.TACO:
+                    Taco(self.attack_group, self.taco_img)
 
         # Background Update
         self.background.update(dt)
@@ -113,10 +120,10 @@ class Level:
         self.train.draw(screen)
 
         # Bull Update
-        for bull in self.bull_group:
-            if bull.update(dt):
-                bull.kill()
-            bull.draw(screen)
+        for attack in self.attack_group:
+            if attack.update(dt):
+                attack.kill()
+            attack.draw(screen)
 
         # Pellet Update
         for pellet in self.pellet_group:

@@ -38,6 +38,7 @@ class Maraca(pg.sprite.Sprite):
         self.animate(dt)
 
         self.angle += dt * self.speed * self.multiplier
+        self.angle %= 360
         rad = m.radians(self.angle)
         self.pos.z = m.cos(rad) * self.multiplier
         self.pos.x = (m.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img.get_width() / 3)
