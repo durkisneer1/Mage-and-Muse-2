@@ -4,12 +4,12 @@ from constants import *
 
 
 class Bull(pg.sprite.Sprite):
-    def __init__(self, group: pg.sprite.Group, anim_frames):
+    def __init__(self, group: pg.sprite.Group, anim_frames: list[pg.Surface]):
         super().__init__(group)
 
         self.frame_list = anim_frames
         self.max_frames = len(self.frame_list)
-        self.img = self.frame_list[0]  # pg.Surface
+        self.img = self.frame_list[0]
 
         self.side = random.choice(["left", "right"])
         start_x = -self.img.get_width() if self.side == "left" else WIN_WIDTH
@@ -20,6 +20,7 @@ class Bull(pg.sprite.Sprite):
             self.img.get_height() - self.pos_offset[1],
         )
         self.rect = pg.Rect(self.pos, hitbox_size)
+        self.hitbox = self.rect
 
         self.speed = 14 if self.side == "left" else -14
         self.current_frame = 0
@@ -27,7 +28,7 @@ class Bull(pg.sprite.Sprite):
 
         self.health = 2
 
-    def animate(self, dt):
+    def animate(self, dt: float):
         self.current_frame %= self.max_frames
         if self.side == "left":
             self.img = self.frame_list[int(self.current_frame)]
@@ -42,7 +43,7 @@ class Bull(pg.sprite.Sprite):
         if self.health == 0:
             self.kill()
 
-    def update(self, dt) -> bool:
+    def update(self, dt: float) -> bool:
         self.animate(dt)
 
         if self.side == "left":
@@ -54,6 +55,7 @@ class Bull(pg.sprite.Sprite):
             self.rect.topleft = (self.pos.x, self.pos.y + self.pos_offset[1])
         self.pos.x += self.speed * dt
 
+        self.hitbox = self.rect
         return self.pos.x < -self.img.get_width() or self.pos.x > WIN_WIDTH
 
     def draw(self, screen: pg.Surface):

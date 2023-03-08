@@ -24,6 +24,8 @@ class Maraca(pg.sprite.Sprite):
         self.angle = 0
         self.z_pos = 0
 
+        self.health = 50
+
     @functools.cache
     @staticmethod
     def cache_scaled(img, factor):

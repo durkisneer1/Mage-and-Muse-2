@@ -57,7 +57,7 @@ class PelletExplode(pg.sprite.Sprite):
         self,
         other: Pellet,
         groups: pg.sprite.Group,
-        spawn_pos: tuple[float, float],
+        spawn_pos: pg.Vector2,
         anim_frames: list[pg.Surface],
     ):
         super().__init__(groups)
@@ -68,7 +68,7 @@ class PelletExplode(pg.sprite.Sprite):
         self.img = self.anim_frames[0]
 
         offset_pos = (random.randint(-4, 4), random.randint(-4, 4))
-        new_spawn = (spawn_pos[0] + offset_pos[0], spawn_pos[1] + offset_pos[1])
+        new_spawn = (spawn_pos.x + offset_pos[0], spawn_pos.y + offset_pos[1])
         self.pos = pg.Vector2(new_spawn)
 
         self.current_frame = 0

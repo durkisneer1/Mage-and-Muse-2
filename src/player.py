@@ -89,7 +89,7 @@ class Player:
         ):
             self.dash_time = pg.time.get_ticks()
             self.dashed = True
-        if self.dashed and current_time - self.dash_time > 50:
+        if self.dashed and current_time - self.dash_time > 55:
             self.dashed = False
 
         # Horizontal Bounding

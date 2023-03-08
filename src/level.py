@@ -1,5 +1,6 @@
 import pygame as pg
 import random  # NOQA
+from constants import *
 from support import import_folder
 from decor import Background, Train
 from enums import AttackType
@@ -9,6 +10,7 @@ from bull import Bull
 from pellet import Pellet, PelletExplode
 from skull import Skull
 from taco import Taco
+from UI import HealthUI
 
 
 class Level:
@@ -21,13 +23,13 @@ class Level:
 
         # Maraca Setup
         self.boss_group = pg.sprite.Group()
-        Maraca(self.boss_group, True)
-        Maraca(self.boss_group, False)
+        maraca_1 = Maraca(self.boss_group, True)
+        maraca_2 = Maraca(self.boss_group, False)
         Skull(self.boss_group)
 
         # Bull Attack Setup
         self.ATTACK_EVENT = pg.event.custom_type()
-        pg.time.set_timer(self.ATTACK_EVENT, 2500)
+        pg.time.set_timer(self.ATTACK_EVENT, 2000)
         self.attack_group = pg.sprite.Group()
         self.bull_frames = import_folder("../res/bull")
         self.taco_img = pg.image.load("../res/taco/taco.png").convert_alpha()
@@ -41,6 +43,10 @@ class Level:
             "../res/misc/projectile/Projectile.png"
         ).convert()
         self.pellet_frames = import_folder("../res/misc/projectile/anim")
+
+        self.UI_group = pg.sprite.Group()
+        HealthUI(self.UI_group, (0, 0), "left", maraca_1)  # Maraca Health
+        HealthUI(self.UI_group, (WIN_WIDTH, 0), "right", maraca_2)  # Maraca Health
 
     def user_input(
         self,
@@ -61,23 +67,41 @@ class Level:
             )
             self.pellet_delay = 0
 
+    def adjust_UI(self, target_obj: any):
+        target_obj.health -= 1
+        for UI in self.UI_group:
+            if target_obj.health <= 0:
+                target_obj.kill()
+                UI.kill()
+                return
+            if UI.target == target_obj:
+                UI.update(target_obj)
+
     def collision(self):
         for boss in self.boss_group:
             for pellet in self.pellet_group:
                 if boss.rect.colliderect(pellet.rect) and boss.pos.z > 0:
                     PelletExplode(
-                        pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
+                        pellet,
+                        self.hit_explosion_group,
+                        pellet.pos.copy(),
+                        self.pellet_frames,
                     )
+                    self.adjust_UI(boss)
         for attack in self.attack_group:
             if (
-                attack.rect.colliderect(self.player.rect)
+                attack.hitbox.colliderect(self.player.rect)
                 and not self.player.on_cooldown
+                and not self.player.dashed
             ):
                 self.player.hit()
             for pellet in self.pellet_group:
                 if attack.rect.colliderect(pellet.rect):
                     PelletExplode(
-                        pellet, self.hit_explosion_group, pellet.pos, self.pellet_frames
+                        pellet,
+                        self.hit_explosion_group,
+                        pellet.pos.copy(),
+                        self.pellet_frames,
                     )
                     attack.hit()
 
@@ -132,3 +156,6 @@ class Level:
         for expl in self.hit_explosion_group:
             expl.update(dt)
             expl.draw(screen)
+
+        for UI in self.UI_group:
+            UI.draw(screen)
