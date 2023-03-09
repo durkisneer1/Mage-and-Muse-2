@@ -1,17 +1,17 @@
 import pygame as pg
 import math as m
-from support import import_folder
-from constants import WIN_WIDTH, WIN_HEIGHT
+from src.support import import_folder
+from src.constants import WIN_WIDTH, WIN_HEIGHT
 
 
 class Player:
     def __init__(self):
         self.anim_states = {
-            "run": import_folder("../res/mage/run"),
-            "fall": import_folder("../res/mage/fall"),
-            "hit": import_folder("../res/mage/hit"),
-            "jump": import_folder("../res/mage/jump"),
-            "idle": import_folder("../res/mage/idle"),
+            "run": import_folder("./res/mage/run"),
+            "fall": import_folder("./res/mage/fall"),
+            "hit": import_folder("./res/mage/hit"),
+            "jump": import_folder("./res/mage/jump"),
+            "idle": import_folder("./res/mage/idle"),
         }
 
         self.frame_list = self.anim_states["idle"]
@@ -38,6 +38,8 @@ class Player:
         self.hit_time = 0
         self.in_air = False
         self.air_time = 0
+
+        self.health = 5
 
     def animate(self, dt: float):
         self.current_frame %= len(self.frame_list)
@@ -130,7 +132,7 @@ class Player:
 
 class Wand:
     def __init__(self):
-        raw_img = pg.image.load("../res/misc/wand/Wand.png").convert_alpha()
+        raw_img = pg.image.load("./res/weapon/wand/Wand.png").convert_alpha()
         self.img = pg.transform.rotate(raw_img, -135)
         self.rot_img = self.img
         self.rect = self.rot_img.get_rect()

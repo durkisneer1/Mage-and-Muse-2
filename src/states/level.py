@@ -1,19 +1,19 @@
 import pygame as pg
-import random  # NOQA
-from constants import *
-from support import import_folder
-from decor import Background, Train
-from enums import AttackType
-from player import Player, Wand
-from maraca import Maraca
-from bull import Bull
-from pellet import Pellet, PelletExplode
-from skull import Skull
-from taco import Taco
-from UI import HealthUI
+import random
+from src.constants import *
+from src.support import import_folder
+from src.decor import Background, Train
+from src.enums import AttackType, Images
+from src.player import Player, Wand
+from src.maraca import Maraca
+from src.bull import Bull
+from src.pellet import Pellet, PelletExplode
+from src.skull import Skull
+from src.taco import Taco
+from src.UI import HealthBar, PlayerHealth
 
 
-class Level:
+class Gameplay:
     def __init__(self):
         # Level Setup Setup
         self.player = Player()
@@ -31,28 +31,27 @@ class Level:
         self.ATTACK_EVENT = pg.event.custom_type()
         pg.time.set_timer(self.ATTACK_EVENT, 2000)
         self.attack_group = pg.sprite.Group()
-        self.bull_frames = import_folder("../res/bull")
-        self.taco_img = pg.image.load("../res/taco/taco.png").convert_alpha()
+        self.bull_frames = import_folder(Images.bull_frames.value)
+        self.taco_img = pg.image.load(Images.taco_img.value).convert_alpha()
 
         # Pellet Setup
         self.max_delay = 2.5
         self.pellet_delay = self.max_delay
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
-        self.pellet_img = pg.image.load(
-            "../res/misc/projectile/Projectile.png"
-        ).convert()
-        self.pellet_frames = import_folder("../res/misc/projectile/anim")
+        self.pellet_img = pg.image.load(Images.pellet_img.value).convert()
+        self.pellet_frames = import_folder(Images.pellet_frames.value)
 
         self.UI_group = pg.sprite.Group()
-        HealthUI(self.UI_group, (0, 0), "left", maraca_1)  # Maraca Health
-        HealthUI(self.UI_group, (WIN_WIDTH, 0), "right", maraca_2)  # Maraca Health
+        HealthBar(self.UI_group, (0, 0), "left", maraca_1)  # Maraca Health
+        HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maraca_2)  # Maraca Health
+        PlayerHealth(self.UI_group, self.player)  # Player Health
 
     def user_input(
         self,
-        dt: float,
         mouse_click: tuple[bool, bool, bool],
         mouse_pos: tuple[int, int],
+        dt: float,
     ):
         self.pellet_delay += dt
         if self.pellet_delay >= self.max_delay:
@@ -67,10 +66,10 @@ class Level:
             )
             self.pellet_delay = 0
 
-    def adjust_UI(self, target_obj: any):
+    def adjust_ui(self, target_obj: any):
         target_obj.health -= 1
         for UI in self.UI_group:
-            if target_obj.health <= 0:
+            if target_obj.health <= 0 and hasattr(target_obj, "kill"):
                 target_obj.kill()
                 UI.kill()
                 return
@@ -87,7 +86,7 @@ class Level:
                         pellet.pos.copy(),
                         self.pellet_frames,
                     )
-                    self.adjust_UI(boss)
+                    self.adjust_ui(boss)
         for attack in self.attack_group:
             if (
                 attack.hitbox.colliderect(self.player.rect)
@@ -95,6 +94,7 @@ class Level:
                 and not self.player.dashed
             ):
                 self.player.hit()
+                self.adjust_ui(self.player)
             for pellet in self.pellet_group:
                 if attack.rect.colliderect(pellet.rect):
                     PelletExplode(
@@ -107,12 +107,13 @@ class Level:
 
     def update(
         self,
-        dt: float,
+        screen: pg.Surface,
         keys: pg.key.get_pressed,
         mouse_pos: tuple[int, int],
         events: pg.event.get,
-        screen: pg.Surface,
+        dt: float,
     ):
+        self.collision()
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
                 attack_type = random.choice(list(AttackType))
@@ -126,10 +127,11 @@ class Level:
         self.background.draw(screen)
 
         # Maraca/Skull Update
-        sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
-        for boss in sorted_bosses:
-            boss.update(dt)
-            boss.draw(screen)
+        if self.boss_group:
+            sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
+            for boss in sorted_bosses:
+                boss.update(dt)
+                boss.draw(screen)
 
         # Player Update
         self.player.update(dt, keys)

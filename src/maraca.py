@@ -1,15 +1,15 @@
 import functools
 
 import pygame as pg
-from constants import WIN_WIDTH, WIN_HEIGHT
-from support import import_folder
+from src.constants import WIN_WIDTH, WIN_HEIGHT
+from src.support import import_folder
 import math as m
 
 
 class Maraca(pg.sprite.Sprite):
     def __init__(self, group: pg.sprite.Group, brother: bool):
         super().__init__(group)
-        self.anim_states = {"idle": import_folder("../res/maraca/idle")}
+        self.anim_states = {"idle": import_folder("./res/maraca/idle")}
 
         self.frame_list = self.anim_states["idle"]
         self.img = self.anim_states["idle"][0]  # pg.Surface

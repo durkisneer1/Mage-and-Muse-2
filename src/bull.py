@@ -1,6 +1,6 @@
 import pygame as pg
 import random
-from constants import *
+from src.constants import *
 
 
 class Bull(pg.sprite.Sprite):

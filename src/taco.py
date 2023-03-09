@@ -1,7 +1,7 @@
 import pygame as pg
 import random
 import math as m
-from constants import *
+from src.constants import *
 
 
 class Taco(pg.sprite.Sprite):
@@ -75,7 +75,7 @@ class Cheese(pg.sprite.Sprite):
     def __init__(self, group: pg.sprite.Group, spawn_pos: pg.Vector2, side: str):
         super().__init__(group)
 
-        self.img = pg.image.load("../res/taco/cheese.png").convert()
+        self.img = pg.image.load("./res/taco/cheese.png").convert()
 
         self.pos = spawn_pos
         self.speed = random.randint(10, 20)

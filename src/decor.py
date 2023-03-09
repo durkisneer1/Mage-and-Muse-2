@@ -1,17 +1,17 @@
 import pygame as pg
-from constants import WIN_WIDTH, WIN_HEIGHT
-from support import import_folder
+from src.constants import WIN_WIDTH, WIN_HEIGHT
+from src.support import import_folder
 import math as m
 
 
 class Background:
     def __init__(self):
         self.moving_bg_list = (
-            pg.image.load("../res/desert/SandBG.png").convert_alpha(),
-            pg.image.load("../res/desert/SandFG.png").convert_alpha(),
-            pg.image.load("../res/desert/Clouds.png").convert_alpha(),
+            pg.image.load("./res/desert/SandBG.png").convert_alpha(),
+            pg.image.load("./res/desert/SandFG.png").convert_alpha(),
+            pg.image.load("./res/desert/Clouds.png").convert_alpha(),
         )
-        self.sky_anim_list = import_folder("../res/desert/sky", False)
+        self.sky_anim_list = import_folder("./res/desert/sky", False)
         self.sky_img = self.sky_anim_list[0]
         self.max_sky_frames = len(self.sky_anim_list)
         self.current_frame = 0
@@ -45,7 +45,7 @@ class Background:
 
 class Train:
     def __init__(self):
-        self.img = pg.image.load("../res/train/Train.png").convert_alpha()
+        self.img = pg.image.load("./res/train/Train.png").convert_alpha()
         self.img_width = self.img.get_width()
 
         self.x_offset = -8

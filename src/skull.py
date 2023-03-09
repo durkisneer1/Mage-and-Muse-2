@@ -1,19 +1,19 @@
 import pygame as pg
 import math as m
-from constants import *
-from support import import_folder
+from src.constants import *
+from src.support import import_folder
 
 
 class Skull(pg.sprite.Sprite):
     def __init__(self, group: pg.sprite.Group):
         super().__init__(group)
 
-        self.img = pg.image.load("../res/skull/idle.png").convert_alpha()
+        self.img = pg.image.load("./res/skull/idle.png").convert_alpha()
         self.x_offset, self.y_offset = (WIN_WIDTH / 2, WIN_HEIGHT / 2 - 17)
         self.pos = pg.Vector3(self.x_offset, self.y_offset, 0)
         self.rect = self.img.get_rect(center=self.pos.xy)
 
-        self.flower_frames = import_folder("../res/skull/flower")
+        self.flower_frames = import_folder("./res/skull/flower")
         self.flower_pos = [
             pg.Vector2(self.x_offset - 19, self.y_offset),
             pg.Vector2(self.x_offset + 18, self.y_offset),
