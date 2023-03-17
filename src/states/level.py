@@ -49,9 +49,11 @@ class Gameplay:
 
     def user_input(
         self,
+        events: list[pg.event.Event],
         mouse_click: tuple[bool, bool, bool],
         mouse_pos: tuple[int, int],
         dt: float,
+        *args,
     ):
         self.pellet_delay += dt
         if self.pellet_delay >= self.max_delay:

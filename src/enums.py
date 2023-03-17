@@ -11,4 +11,4 @@ class Images(enum.Enum):
     taco_img = "./res/taco/taco.png"
     pellet_img = "./res/weapon/projectile/Projectile.png"
     pellet_frames = "./res/weapon/projectile/anim"
-    pause_window = "./res/interface/pause_window.png"
+    window_img = "./res/interface/pause_window.png"

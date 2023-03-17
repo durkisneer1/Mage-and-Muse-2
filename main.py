@@ -2,25 +2,27 @@ import pygame as pg
 from src.constants import *
 from src.states.level import Gameplay
 from src.states.pause import Pause
+from src.states.title import Title
 
 pg.init()
 
 screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)
 pg.display.set_caption("Mage and Muse 2")
 clock = pg.time.Clock()
+font = pg.font.Font("res/fonts/arcade_in.ttf", 32)
 
 game_states = {
-    "title": None,
+    "title": Title(font),
     "controls": None,
     "gameplay": Gameplay(),
-    "pause": Pause(screen.copy()),
+    "pause": Pause(screen.copy(), font),
     "lose": None,
     "win": None,
 }
 
 
 def main():
-    current_state = game_states["gameplay"]
+    current_state = game_states["title"]
     fps_tracker = {}
     run = True
     while run:
@@ -47,7 +49,8 @@ def main():
                     elif current_state == game_states["pause"]:
                         current_state = game_states["gameplay"]
 
-        current_state.user_input(mouse_click, mouse_pos, dt)
+        if s := current_state.user_input(events, mouse_click, mouse_pos, dt, mouse_click):
+            current_state = game_states[s]
         current_state.update(screen, keys, mouse_pos, events, dt)
 
         pg.display.flip()
