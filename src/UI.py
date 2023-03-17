@@ -49,7 +49,7 @@ class PlayerHealth(pg.sprite.Sprite):
         self.img.fill("black")
         self.rect = self.img.get_rect(bottomleft=(0, WIN_HEIGHT))
 
-        self.font = pg.font.Font("./res/fonts/rainy_hearts.ttf", 16)
+        self.font = pg.font.Font("./res/fonts/rainyhearts.ttf", 16)
         self.text_surf = self.font.render(
             f"Health: {self.target.health}", False, "white"
         )

@@ -7,11 +7,11 @@ from src.constants import WIN_WIDTH, WIN_HEIGHT
 class Player:
     def __init__(self):
         self.anim_states = {
-            "run": import_folder("res/mage/run"),
-            "fall": import_folder("res/mage/fall"),
-            "hit": import_folder("res/mage/hit"),
-            "jump": import_folder("res/mage/jump"),
-            "idle": import_folder("res/mage/idle"),
+            "run": import_folder("./res/mage/run"),
+            "fall": import_folder("./res/mage/fall"),
+            "hit": import_folder("./res/mage/hit"),
+            "jump": import_folder("./res/mage/jump"),
+            "idle": import_folder("./res/mage/idle"),
         }
 
         self.frame_list = self.anim_states["idle"]
