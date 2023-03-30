@@ -31,16 +31,16 @@ class Gameplay:
         self.ATTACK_EVENT = pg.event.custom_type()
         pg.time.set_timer(self.ATTACK_EVENT, 2000)
         self.attack_group = pg.sprite.Group()
-        self.bull_frames = import_folder(Images.bull_frames.value)
-        self.taco_img = pg.image.load(Images.taco_img.value).convert_alpha()
+        self.bull_frames = import_folder(Images.bull_frames)
+        self.taco_img = pg.image.load(Images.taco_img).convert_alpha()
 
         # Pellet Setup
         self.max_delay = 2.5
         self.pellet_delay = self.max_delay
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
-        self.pellet_img = pg.image.load(Images.pellet_img.value).convert()
-        self.pellet_frames = import_folder(Images.pellet_frames.value)
+        self.pellet_img = pg.image.load(Images.pellet_img).convert()
+        self.pellet_frames = import_folder(Images.pellet_frames)
 
         self.UI_group = pg.sprite.Group()
         HealthBar(self.UI_group, (0, 0), "left", maraca_1)  # Maraca Health

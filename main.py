@@ -3,19 +3,20 @@ from src.constants import *
 from src.states.level import Gameplay
 from src.states.pause import Pause
 from src.states.title import Title
+from src.states.controls import Controls
 
 pg.init()
 
 screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)
 pg.display.set_caption("Mage and Muse 2")
 clock = pg.time.Clock()
-font = pg.font.Font("res/fonts/arcade_in.ttf", 32)
+letter_font = pg.font.Font("res/fonts/arcade_in.ttf", 32)
 
 game_states = {
-    "title": Title(font),
-    "controls": None,
-    "gameplay": Gameplay(),
-    "pause": Pause(screen.copy(), font),
+    "title": Title(letter_font),
+    "controls": Controls(letter_font),
+    "gameplay": None,
+    "pause": Pause(screen.copy(), letter_font),
     "lose": None,
     "win": None,
 }
@@ -49,7 +50,11 @@ def main():
                     elif current_state == game_states["pause"]:
                         current_state = game_states["gameplay"]
 
-        if s := current_state.user_input(events, mouse_click, mouse_pos, dt, mouse_click):
+        if s := current_state.user_input(
+            events, mouse_click, mouse_pos, dt, mouse_click
+        ):
+            if s == "gameplay":
+                game_states[s] = Gameplay()
             current_state = game_states[s]
         current_state.update(screen, keys, mouse_pos, events, dt)
 
