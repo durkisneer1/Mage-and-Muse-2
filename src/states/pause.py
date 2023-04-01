@@ -30,6 +30,8 @@ class Pause:
                     return "title"
                 elif self.resume_button.check_collision(ev.pos):
                     return "gameplay"
+            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
+                return "gameplay"
 
     def update(self, screen: pg.Surface, *args):
         screen.blit(self.last_frame, (0, 0))

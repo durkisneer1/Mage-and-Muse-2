@@ -23,8 +23,8 @@ class Gameplay:
 
         # Maraca Setup
         self.boss_group = pg.sprite.Group()
-        maraca_1 = Maraca(self.boss_group, True)
-        maraca_2 = Maraca(self.boss_group, False)
+        maracaL = Maraca(self.boss_group, True)
+        maracaR = Maraca(self.boss_group, False)
         Skull(self.boss_group)
 
         # Bull Attack Setup
@@ -43,8 +43,8 @@ class Gameplay:
         self.pellet_frames = import_folder(Images.pellet_frames)
 
         self.UI_group = pg.sprite.Group()
-        HealthBar(self.UI_group, (0, 0), "left", maraca_1)  # Maraca Health
-        HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maraca_2)  # Maraca Health
+        HealthBar(self.UI_group, (0, 0), "left", maracaL)  # Maraca Health
+        HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maracaR)  # Maraca Health
         PlayerHealth(self.UI_group, self.player)  # Player Health
 
     def user_input(
@@ -67,6 +67,10 @@ class Gameplay:
                 mouse_pos,
             )
             self.pellet_delay = 0
+
+        for ev in events:
+            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
+                return "pause"
 
     def adjust_ui(self, target_obj: any):
         target_obj.health -= 1

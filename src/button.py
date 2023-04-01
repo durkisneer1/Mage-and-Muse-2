@@ -8,11 +8,12 @@ class Button:
         text: str,
         font: pg.font.Font,
         scale_factor: float = 1.0,
+        color: str = "white",
     ):
         self.pos = pg.Vector2(pos) if isinstance(pos, tuple) else pos
         offset = pg.Vector2(-1, 1)
         self.text_top = pg.transform.scale_by(
-            font.render(text, False, "white"), scale_factor
+            font.render(text, False, color), scale_factor
         )
         self.text_bottom = pg.transform.scale_by(
             font.render(text, False, "black"), scale_factor

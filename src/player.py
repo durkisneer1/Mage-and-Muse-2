@@ -1,7 +1,7 @@
 import pygame as pg
 import math as m
 from src.support import import_folder
-from src.constants import WIN_WIDTH, WIN_HEIGHT
+from src.constants import *
 
 
 class Player:
@@ -21,7 +21,7 @@ class Player:
         self.pos = pg.Vector2(
             WIN_WIDTH / 2, WIN_HEIGHT - self.img.get_height() - self.y_offset
         )
-        self.rect = self.img.get_rect(midtop=self.pos)
+        self.rect = pg.FRect(self.img.get_rect(midtop=self.pos))
 
         self.grav = 12
         self.on_ground = True

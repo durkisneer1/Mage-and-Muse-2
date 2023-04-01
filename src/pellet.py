@@ -19,7 +19,7 @@ class Pellet(pg.sprite.Sprite):
             (spawn_pos[1] + 5) - img.get_height() / 2,
         )
         self.img = img
-        self.rect = self.img.get_rect(topleft=self.pos)
+        self.rect = pg.FRect(self.img.get_rect(topleft=self.pos))
         self.vel = self.direction(mouse_pos)
 
         self.turn_tick = 0

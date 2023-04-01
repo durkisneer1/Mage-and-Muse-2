@@ -29,7 +29,7 @@ class Taco(pg.sprite.Sprite):
         self.old_tick = 0
 
         self.space = self.speed * 2
-        self.hitbox = pg.Rect((self.pos.x - self.space, 0), (1, WIN_HEIGHT))
+        self.hitbox = pg.FRect((self.pos.x - self.space, 0), (1, WIN_HEIGHT))
 
     def hit(self):
         self.health -= 1

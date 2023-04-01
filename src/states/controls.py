@@ -18,11 +18,11 @@ class Controls:
 
         self.controls_title = Button(self.pos, "CONTROLS", font)
         self.movement = Button(self.pos + pg.Vector2(0, 30), "WASD to move", font, 0.5)
-        self.jump = Button(self.pos + pg.Vector2(0, 40), "Space to jump", font, 0.5)
+        self.jump = Button(self.pos + pg.Vector2(0, 40), "SPACE to jump", font, 0.5)
         self.attack = Button(
-            self.pos + pg.Vector2(0, 50), "Left click to attack", font, 0.5
+            self.pos + pg.Vector2(0, 50), "LMB to attack", font, 0.5
         )
-        self.pause = Button(self.pos + pg.Vector2(0, 60), "Esc to pause", font, 0.5)
+        self.pause = Button(self.pos + pg.Vector2(0, 60), "ESC to pause", font, 0.5)
 
         self.back_button = Button(
             pg.Vector2(self.pos.x + WIN_WIDTH / 4, WIN_HEIGHT - self.pos.y),
@@ -40,6 +40,8 @@ class Controls:
             if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
                 if self.back_button.check_collision(ev.pos):
                     return "title"
+            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
+                return "title"
 
     def update(self, screen: pg.Surface, *args):
         screen.blit(self.background_img, (0, 0))

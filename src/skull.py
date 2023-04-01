@@ -11,7 +11,7 @@ class Skull(pg.sprite.Sprite):
         self.img = pg.image.load("./res/skull/idle.png").convert_alpha()
         self.x_offset, self.y_offset = (WIN_WIDTH / 2, WIN_HEIGHT / 2 - 17)
         self.pos = pg.Vector3(self.x_offset, self.y_offset, 0)
-        self.rect = self.img.get_rect(center=self.pos.xy)
+        self.rect = pg.FRect(self.img.get_rect(center=self.pos.xy))
 
         self.flower_frames = import_folder("./res/skull/flower")
         self.flower_pos = [

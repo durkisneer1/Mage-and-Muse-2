@@ -13,7 +13,7 @@ class Maraca(pg.sprite.Sprite):
 
         self.frame_list = self.anim_states["idle"]
         self.img = self.anim_states["idle"][0]  # pg.Surface
-        self.rect = self.img.get_rect()
+        self.rect = pg.FRect(self.img.get_rect())
 
         start_x = 0 if brother else WIN_WIDTH - self.img.get_width()
         self.pos = pg.Vector3(start_x, WIN_HEIGHT - self.frame_list[0].get_height(), 0)

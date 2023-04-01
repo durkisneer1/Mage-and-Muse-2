@@ -19,7 +19,7 @@ class Bull(pg.sprite.Sprite):
             self.img.get_width() - self.pos_offset[0],
             self.img.get_height() - self.pos_offset[1],
         )
-        self.rect = pg.Rect(self.pos, hitbox_size)
+        self.rect = pg.FRect(self.pos, hitbox_size)
         self.hitbox = self.rect
 
         self.speed = 14 if self.side == "left" else -14
