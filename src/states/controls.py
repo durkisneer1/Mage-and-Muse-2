@@ -22,6 +22,7 @@ class Controls:
             self.pos + pg.Vector2(0, 50), "LMB to attack", font, 0.5
         )
         self.pause = Button(self.pos + pg.Vector2(0, 60), "ESC to pause", font, 0.5)
+        self.dash = Button(self.pos + pg.Vector2(0, 70), "LSHIFT to dash", font, 0.5)
 
         self.back_button = Button(
             pg.Vector2(self.pos.x + WIN_WIDTH / 4, WIN_HEIGHT - self.pos.y),
@@ -52,4 +53,5 @@ class Controls:
         self.jump.draw(screen)
         self.attack.draw(screen)
         self.pause.draw(screen)
+        self.dash.draw(screen)
         self.back_button.draw(screen)

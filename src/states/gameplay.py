@@ -23,8 +23,8 @@ class Gameplay:
 
         # Maraca Setup
         self.boss_group = pg.sprite.Group()
-        maracaL = Maraca(self.boss_group, True)
-        maracaR = Maraca(self.boss_group, False)
+        maraca_left = Maraca(self.boss_group, True)
+        maraca_right = Maraca(self.boss_group, False)
         Skull(self.boss_group)
 
         # Bull Attack Setup
@@ -43,8 +43,8 @@ class Gameplay:
         self.pellet_frames = import_folder(Images.pellet_frames)
 
         self.UI_group = pg.sprite.Group()
-        HealthBar(self.UI_group, (0, 0), "left", maracaL)  # Maraca Health
-        HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maracaR)  # Maraca Health
+        HealthBar(self.UI_group, (0, 0), "left", maraca_left)  # Maraca Health
+        HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maraca_right)  # Maraca Health
         PlayerHealth(self.UI_group, self.player)  # Player Health
 
     def user_input(
@@ -114,6 +114,15 @@ class Gameplay:
                     )
                     attack.hit()
 
+    def queue_attacks(self, events: pg.event.get):
+        for ev in events:
+            if ev.type == self.ATTACK_EVENT and len(self.boss_group) > 1:
+                attack_type = random.choice(list(AttackType))
+                if attack_type == AttackType.BULL:
+                    Bull(self.attack_group, self.bull_frames)
+                elif attack_type == AttackType.TACO:
+                    Taco(self.attack_group, self.taco_img)
+
     def update(
         self,
         screen: pg.Surface,
@@ -123,13 +132,7 @@ class Gameplay:
         dt: float,
     ):
         self.collision()
-        for ev in events:
-            if ev.type == self.ATTACK_EVENT:
-                attack_type = random.choice(list(AttackType))
-                if attack_type == AttackType.BULL:
-                    Bull(self.attack_group, self.bull_frames)
-                elif attack_type == AttackType.TACO:
-                    Taco(self.attack_group, self.taco_img)
+        self.queue_attacks(events)
 
         # Background Update
         self.background.update(dt)
