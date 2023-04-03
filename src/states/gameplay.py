@@ -72,6 +72,9 @@ class Gameplay:
             if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
                 return "pause"
 
+        if self.player.health <= 0:
+            return "exit"
+
     def adjust_ui(self, target_obj: any):
         target_obj.health -= 1
         for UI in self.UI_group:

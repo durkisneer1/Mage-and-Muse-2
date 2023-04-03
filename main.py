@@ -16,7 +16,7 @@ game_states = {
     "title": Title(font),
     "controls": Controls(font),
     "gameplay": None,  # Gameplay(screen, font),
-    "pause": Pause(screen.copy(), font),
+    "pause": Pause(font),
     "lose": None,
     "win": None,
 }
@@ -35,14 +35,14 @@ def main():
     run = True
     while run:
         dt = clock.tick() / 100
-        if current_state == game_states["gameplay"]:
-            fps = int(clock.get_fps())
-            fps_tracker[fps] = fps_tracker.setdefault(fps, 0) + 1
-
         keys = pg.key.get_pressed()
         mouse_click = pg.mouse.get_pressed()
         mouse_pos = pg.mouse.get_pos()
         events = pg.event.get()
+
+        if current_state == game_states["gameplay"]:
+            fps = int(clock.get_fps())
+            fps_tracker[fps] = fps_tracker.setdefault(fps, 0) + 1
 
         for ev in events:
             if ev.type == pg.QUIT:
@@ -57,11 +57,10 @@ def main():
                 if s == "gameplay" and current_state == game_states["title"]:
                     game_states[s] = Gameplay()
                 current_state = game_states[s]
-                if s == "pause":
+                if s == "pause" or s == "controls":
                     current_state.last_frame = screen.copy()
 
         current_state.update(screen, keys, mouse_pos, events, dt)
-
         pg.display.flip()
 
 

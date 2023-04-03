@@ -6,8 +6,7 @@ from src.button import Button
 
 class Controls:
     def __init__(self, font: pg.font.Font):
-        self.background_img = pg.Surface(WIN_SIZE)
-        self.background_img.fill("lightgray")
+        self.last_frame = pg.Surface(WIN_SIZE)
         self.pos = pg.Vector2(WIN_WIDTH / 2 + 1, WIN_HEIGHT / 4)
 
         self.tint = pg.Surface(WIN_SIZE, pg.SRCALPHA)
@@ -44,7 +43,7 @@ class Controls:
                 return "title"
 
     def update(self, screen: pg.Surface, *args):
-        screen.blit(self.background_img, (0, 0))
+        screen.blit(self.last_frame, (0, 0))
         screen.blit(self.tint, (0, 0))
         screen.blit(self.window, self.window_rect)
 

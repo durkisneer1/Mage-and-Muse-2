@@ -49,18 +49,18 @@ class PlayerHealth(pg.sprite.Sprite):
         self.text_pos = pg.Vector2(self.heart_rect.topright[0] + 2, self.heart_rect.topright[1] + 1)
         self.offset_vec = pg.Vector2()
         self.text_surf = self.font.render(
-            f"Health: {self.target.health}", False, BLACK
+            f"{self.target.health}", False, BLACK
         )
         self.text_shadow = self.font.render(
-            f"Health: {self.target.health}", False, "white"
+            f"{self.target.health}", False, "white"
         )
 
     def update(self, target_obj: any):
         self.text_surf = self.font.render(
-            f"Health: {self.target.health}", False, BLACK
+            f"{self.target.health}", False, BLACK
         )
         self.text_shadow = self.font.render(
-            f"Health: {self.target.health}", False, "white"
+            f"{self.target.health}", False, "white"
         )
 
     def draw(self, screen: pg.Surface):

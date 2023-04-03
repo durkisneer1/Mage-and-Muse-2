@@ -5,8 +5,8 @@ from src.button import Button
 
 
 class Pause:
-    def __init__(self, last_frame: pg.Surface, font: pg.font.Font):
-        self.last_frame = last_frame
+    def __init__(self, font: pg.font.Font):
+        self.last_frame = pg.Surface(WIN_SIZE)
         self.pos = pg.Vector2(WIN_WIDTH / 2 + 1, WIN_HEIGHT / 4)
 
         self.tint = pg.Surface(WIN_SIZE, pg.SRCALPHA)
