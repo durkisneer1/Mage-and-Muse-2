@@ -35,9 +35,12 @@ class Background:
                 self.moving_bg_list[img_pick], ((pos_x + WIN_WIDTH * i), self.pos.y)
             )
 
-    def draw(self, screen: pg.Surface):
+    def draw(self, screen: pg.Surface, is_day: bool):
         screen.blit(self.sky_img, (0, 0))
-        pg.draw.circle(screen, (251, 242, 54), (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Sun
+        if is_day:
+            pg.draw.circle(screen, (251, 242, 54), (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Sun
+        else:
+            pg.draw.circle(screen, (255, 255, 255), (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Moon
         self.draw_wrapped(screen, 0, 2)
         self.draw_wrapped(screen, 1, 1)
         self.draw_wrapped(screen, 2, 4)
@@ -53,7 +56,7 @@ class Train:
         self.speed = 3
         self.angle = 0
 
-    def update(self, dt):
+    def update(self, dt: float):
         rad = m.radians(self.angle)
         x_pos = m.sin(rad) + self.x_offset
         self.pos.x = x_pos
@@ -62,3 +65,24 @@ class Train:
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos)
+
+
+class TrainFire(pg.sprite.Sprite):
+    def __init__(self, group: pg.sprite.Group, fire_frames: list[pg.Surface], x_offset: int, starting_frame: int):
+        super().__init__(group)
+
+        self.max_frames = len(fire_frames)
+        self.frame_list = fire_frames
+        self.current_frame = starting_frame
+        self.anim_speed = 1.5
+        self.fire_img = self.frame_list[self.current_frame]
+        self.fire_height = self.fire_img.get_height() - 2
+        self.pos = pg.Vector2(x_offset, WIN_HEIGHT - self.fire_img.get_height() - 27)
+
+    def update(self, dt: float):
+        self.current_frame %= self.max_frames
+        self.fire_img = self.frame_list[int(self.current_frame)]
+        self.current_frame += self.anim_speed * dt
+
+    def draw(self, screen: pg.Surface):
+        screen.blit(self.fire_img, self.pos)

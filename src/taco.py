@@ -78,18 +78,19 @@ class Cheese(pg.sprite.Sprite):
         self.img = pg.image.load("./res/taco/cheese.png").convert()
 
         self.pos = spawn_pos
-        self.speed = random.randint(10, 20)
+        self.fall_speed = random.randint(10, 20)
+        self.momentum_speed = 5
         self.side = side
         self.angle = 0
 
         self.turn_direction = random.choice([-1, 1])
 
     def update(self, dt: float):
-        self.pos.y += dt * self.speed
+        self.pos.y += dt * self.fall_speed
         if self.side == "left":
-            self.pos.x += dt * 5
+            self.pos.x += dt * self.momentum_speed
         elif self.side == "right":
-            self.pos.x -= dt * 5
+            self.pos.x -= dt * self.momentum_speed
 
         self.angle += dt * self.turn_direction * 20
 

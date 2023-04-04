@@ -18,9 +18,7 @@ class Controls:
         self.controls_title = Button(self.pos, "CONTROLS", font)
         self.movement = Button(self.pos + pg.Vector2(0, 30), "WASD to move", font, 0.5)
         self.jump = Button(self.pos + pg.Vector2(0, 40), "SPACE to jump", font, 0.5)
-        self.attack = Button(
-            self.pos + pg.Vector2(0, 50), "LMB to attack", font, 0.5
-        )
+        self.attack = Button(self.pos + pg.Vector2(0, 50), "LMB to attack", font, 0.5)
         self.pause = Button(self.pos + pg.Vector2(0, 60), "ESC to pause", font, 0.5)
         self.dash = Button(self.pos + pg.Vector2(0, 70), "LSHIFT to dash", font, 0.5)
 

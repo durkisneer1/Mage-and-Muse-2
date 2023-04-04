@@ -24,11 +24,11 @@ class Maraca(pg.sprite.Sprite):
         self.angle = 0
         self.z_pos = 0
 
-        self.health = 50
+        self.health = 1  # Default 50
 
-    @functools.cache
     @staticmethod
-    def cache_scaled(img, factor):
+    @functools.cache
+    def cache_scaled(img: pg.Surface, factor: float):
         return pg.transform.scale_by(img, factor)
 
     def animate(self, dt: float):
@@ -47,7 +47,7 @@ class Maraca(pg.sprite.Sprite):
 
         self.img = Maraca.cache_scaled(self.img, ((self.pos.z / 4) + 0.75))
 
-    def hitbox(self):
+    def draw_collider(self):
         box_height = self.img.get_height() / 3
         box_width = self.img.get_width() - (self.img.get_width() / 5)
         x_offset = self.pos.x + (box_width / 8)
@@ -57,4 +57,4 @@ class Maraca(pg.sprite.Sprite):
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos.xy)
-        self.hitbox()
+        self.draw_collider()

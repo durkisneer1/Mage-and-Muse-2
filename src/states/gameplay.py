@@ -1,8 +1,9 @@
 import pygame as pg
 import random
+
 from src.constants import *
 from src.support import import_folder
-from src.decor import Background, Train
+from src.decor import Background, Train, TrainFire
 from src.enums import AttackType, Images
 from src.player import Player, Wand
 from src.maraca import Maraca
@@ -11,6 +12,7 @@ from src.pellet import Pellet, PelletExplode
 from src.skull import Skull
 from src.taco import Taco
 from src.UI import HealthBar, PlayerHealth
+from src.rain import Rain
 
 
 class Gameplay:
@@ -21,11 +23,35 @@ class Gameplay:
         self.background = Background()
         self.train = Train()
 
+        # Fire Setup
+        ground_fire_frames = import_folder(Images.ground_fire_frames, scale=1.5)
+        self.fire_group = pg.sprite.Group()
+        for i in (20, 95, 175, 240):
+            random_frame = random.randint(0, len(ground_fire_frames) - 1)
+            TrainFire(self.fire_group, ground_fire_frames, i, random_frame)
+
+        # Darken Screen
+        self.tint_surf = pg.Surface(WIN_SIZE, pg.SRCALPHA)
+        self.tint_surf.fill((0, 0, 0, 135))
+
+        # Rain Setup
+        self.rain_group = pg.sprite.Group()
+        self.rain_images = import_folder(Images.rain_drop_images)
+        self.RAIN_EVENT = pg.event.custom_type()
+        pg.time.set_timer(self.RAIN_EVENT, 50)
+
         # Maraca Setup
         self.boss_group = pg.sprite.Group()
         maraca_left = Maraca(self.boss_group, True)
         maraca_right = Maraca(self.boss_group, False)
-        Skull(self.boss_group)
+
+        # Skull Setup
+        flower_frames = import_folder(Images.flower_frames)
+        fire_eye_frames = import_folder(Images.fire_eye_frames, scale=1.5)
+        Skull(self.boss_group, Images.idle_skull_img, flower_frames, 15, 3)
+        self.active_skull = Skull(
+            None, Images.active_skull_img, fire_eye_frames, 12, 20
+        )
 
         # Bull Attack Setup
         self.ATTACK_EVENT = pg.event.custom_type()
@@ -122,6 +148,9 @@ class Gameplay:
                     Bull(self.attack_group, self.bull_frames)
                 elif attack_type == AttackType.TACO:
                     Taco(self.attack_group, self.taco_img)
+            elif ev.type == self.RAIN_EVENT and not bool(self.boss_group):
+                for i in range(15):
+                    Rain(self.rain_group, self.rain_images)
 
     def update(
         self,
@@ -136,14 +165,32 @@ class Gameplay:
 
         # Background Update
         self.background.update(dt)
-        self.background.draw(screen)
+        self.background.draw(screen, bool(self.boss_group))
 
         # Maraca/Skull Update
-        if self.boss_group:
+        if g := self.boss_group:
             sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
             for boss in sorted_bosses:
                 boss.update(dt)
                 boss.draw(screen)
+                if len(g) == 1:
+                    boss.kill()
+        else:
+            screen.blit(self.tint_surf, (0, 0))
+
+            # Active Skull Update
+            self.active_skull.update(dt)
+            self.active_skull.draw(screen)
+
+            # Train Fire Update
+            for fire in self.fire_group:
+                fire.update(dt)
+                fire.draw(screen)
+
+            # Rain Update
+            for rain in self.rain_group:
+                rain.update(dt)
+                rain.draw(screen)
 
         # Player Update
         self.player.update(dt, keys)
