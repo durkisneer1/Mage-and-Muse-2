@@ -37,10 +37,8 @@ class Background:
 
     def draw(self, screen: pg.Surface, is_day: bool):
         screen.blit(self.sky_img, (0, 0))
-        if is_day:
-            pg.draw.circle(screen, (251, 242, 54), (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Sun
-        else:
-            pg.draw.circle(screen, (255, 255, 255), (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Moon
+        color = (251, 242, 54) if is_day else (255, 255, 255)
+        pg.draw.circle(screen, color, (WIN_WIDTH, WIN_HEIGHT / 2), 15)  # Sun/Moon
         self.draw_wrapped(screen, 0, 2)
         self.draw_wrapped(screen, 1, 1)
         self.draw_wrapped(screen, 2, 4)
@@ -68,21 +66,36 @@ class Train:
 
 
 class TrainFire(pg.sprite.Sprite):
-    def __init__(self, group: pg.sprite.Group, fire_frames: list[pg.Surface], x_offset: int, starting_frame: int):
+    def __init__(
+        self,
+        group: pg.sprite.Group,
+        fire_frames: list[pg.Surface],
+        x_offset: int,
+    ):
         super().__init__(group)
 
         self.max_frames = len(fire_frames)
         self.frame_list = fire_frames
-        self.current_frame = starting_frame
+        self.current_frame = 0
         self.anim_speed = 1.5
         self.fire_img = self.frame_list[self.current_frame]
-        self.fire_height = self.fire_img.get_height() - 2
-        self.pos = pg.Vector2(x_offset, WIN_HEIGHT - self.fire_img.get_height() - 27)
+        fire_size = self.fire_img.get_size()
+
+        self.pos = pg.Vector2(
+            x_offset - fire_size[0] / 2, WIN_HEIGHT - fire_size[1] - 29
+        )
+
+        self.loops = 0
 
     def update(self, dt: float):
-        self.current_frame %= self.max_frames
+        if self.current_frame >= self.max_frames:
+            self.current_frame = 0
+            self.loops += 1
         self.fire_img = self.frame_list[int(self.current_frame)]
         self.current_frame += self.anim_speed * dt
+
+        if self.loops > 4:
+            self.kill()
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.fire_img, self.pos)

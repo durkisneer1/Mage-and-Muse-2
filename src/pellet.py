@@ -9,37 +9,66 @@ class Pellet(pg.sprite.Sprite):
         groups: pg.sprite.Group,
         spawn_pos: tuple,
         img: pg.Surface,
-        mouse_pos: tuple[int, int],
+        dest: tuple[int, int] | float,
+        turn_speed: int = 1,
+        name: str = "pellet",
+        move_method: str = "linear",
     ):
         super().__init__(groups)
 
+        self.name = name
         self.speed = 20
+        self.gravity = 3
+
         self.pos = pg.Vector2(
             spawn_pos[0] - img.get_width() / 2,
             (spawn_pos[1] + 5) - img.get_height() / 2,
         )
         self.img = img
         self.rect = pg.FRect(self.img.get_rect(topleft=self.pos))
-        self.vel = self.direction(mouse_pos)
+
+        if move_method == "linear":
+            self.vel = self.linear_direction(dest)
+        elif move_method == "parabolic":
+            self.vel = self.parabolic_direction(dest)
 
         self.turn_tick = 0
+        self.turn_speed = turn_speed
 
     def rotate(self, dt: float):
-        self.turn_tick += dt
+        self.turn_tick += dt * self.turn_speed
         if self.turn_tick > 1:
             self.img = pg.transform.rotate(self.img, 90)
             self.turn_tick = 0
 
-    def direction(self, mouse_pos: tuple[int, int]) -> pg.Vector2:
-        xy_diff = (mouse_pos[0] - self.pos.x, mouse_pos[1] - self.pos.y)
-        unit_vec = pg.Vector2(xy_diff).normalize() * self.speed
+    def parabolic_direction(self, distance: float) -> pg.Vector2:
+        dx = (distance / WIN_WIDTH) - 0.5
+        dy = -1
+        dir_vec = pg.Vector2(dx, dy) * self.speed
+        return dir_vec
+
+    def linear_direction(self, dest: tuple[int, int]) -> pg.Vector2:
+        dx, dy = (dest[0] - self.pos.x, dest[1] - self.pos.y)
+        unit_vec = pg.Vector2(dx, dy).normalize() * self.speed
         return unit_vec
 
-    def update(self, dt: float):
+    def parabolic_update(self, dt: float):
+        self.rotate(dt)
+
+        self.vel.y += self.gravity * dt
+        self.pos += self.vel * dt
+        self.rect.topleft = self.pos
+
+        if self.pos.y > WIN_HEIGHT - 27:
+            self.kill()
+            return True
+
+    def linear_update(self, dt: float):
         self.rotate(dt)
 
         self.pos += self.vel * dt
         self.rect.topleft = self.pos
+
         if (
             self.pos.x < 0
             or self.pos.x > WIN_WIDTH

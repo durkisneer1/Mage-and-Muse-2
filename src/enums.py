@@ -17,4 +17,4 @@ class Images:
     idle_skull_img = "./res/skull/idle.png"
     active_skull_img = "./res/skull/active.png"
     flower_frames = "./res/skull/flower"
-    rain_drop_images = "./res/rain"
+    fireball_img = "./res/skull/fireball/fireball.png"

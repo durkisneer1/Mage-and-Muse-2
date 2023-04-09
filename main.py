@@ -5,6 +5,7 @@ from src.states.pause import Pause
 from src.states.title import Title
 from src.states.controls import Controls
 
+
 pg.init()
 
 screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)
@@ -23,6 +24,7 @@ game_states = {
 
 
 def end_game(fps_tracker: dict) -> bool:
+    print("\n")
     total = sum(v for v in fps_tracker.values())
     for k in sorted(fps_tracker.keys()):
         print(f"FPS: {k}\t{100 * fps_tracker[k] / total:.2f}%")

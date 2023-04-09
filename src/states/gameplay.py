@@ -24,11 +24,9 @@ class Gameplay:
         self.train = Train()
 
         # Fire Setup
-        ground_fire_frames = import_folder(Images.ground_fire_frames, scale=1.5)
+        self.fireball_image = pg.image.load(Images.fireball_img).convert_alpha()
+        self.ground_fire_frames = import_folder(Images.ground_fire_frames, scale=1.5)
         self.fire_group = pg.sprite.Group()
-        for i in (20, 95, 175, 240):
-            random_frame = random.randint(0, len(ground_fire_frames) - 1)
-            TrainFire(self.fire_group, ground_fire_frames, i, random_frame)
 
         # Darken Screen
         self.tint_surf = pg.Surface(WIN_SIZE, pg.SRCALPHA)
@@ -36,7 +34,19 @@ class Gameplay:
 
         # Rain Setup
         self.rain_group = pg.sprite.Group()
-        self.rain_images = import_folder(Images.rain_drop_images)
+        self.rain_surface = pg.Surface((1, 4))
+        self.rain_colors = (
+            (55, 148, 110),
+            (50, 60, 57),
+            (63, 63, 116),
+            (48, 96, 130),
+            (91, 110, 225),
+            (99, 155, 255),
+            (95, 205, 228),
+            (132, 126, 135),
+            (105, 106, 106),
+            (89, 86, 82),
+        )  # Blue-Green-Gray Colors
         self.RAIN_EVENT = pg.event.custom_type()
         pg.time.set_timer(self.RAIN_EVENT, 50)
 
@@ -142,15 +152,35 @@ class Gameplay:
 
     def queue_attacks(self, events: pg.event.get):
         for ev in events:
-            if ev.type == self.ATTACK_EVENT and len(self.boss_group) > 1:
-                attack_type = random.choice(list(AttackType))
-                if attack_type == AttackType.BULL:
-                    Bull(self.attack_group, self.bull_frames)
-                elif attack_type == AttackType.TACO:
-                    Taco(self.attack_group, self.taco_img)
-            elif ev.type == self.RAIN_EVENT and not bool(self.boss_group):
-                for i in range(15):
-                    Rain(self.rain_group, self.rain_images)
+            if ev.type == self.ATTACK_EVENT:
+                if bool(self.boss_group):  # Skull Idle
+                    attack_type = random.choice(list(AttackType))
+                    if attack_type == AttackType.BULL:
+                        Bull(self.attack_group, self.bull_frames)
+                    elif attack_type == AttackType.TACO:
+                        Taco(self.attack_group, self.taco_img)
+
+                else:  # Skull Active
+                    spawn = (
+                        self.active_skull.rect.centerx,
+                        self.active_skull.rect.centery + 24,
+                    )
+                    distance = random.choice((20, 95, 175, 240)) + 24  # Center target
+                    Pellet(
+                        self.pellet_group,
+                        spawn,
+                        self.fireball_image,
+                        distance,
+                        turn_speed=2,
+                        name="fireball",
+                        move_method="parabolic",
+                    )
+
+            elif ev.type == self.RAIN_EVENT and not bool(
+                self.boss_group
+            ):  # Rain Particles
+                for i in range(50):
+                    Rain(self.rain_group, self.rain_surface, self.rain_colors)
 
     def update(
         self,
@@ -212,11 +242,17 @@ class Gameplay:
 
         # Pellet Update
         for pellet in self.pellet_group:
-            pellet.update(dt)
+            if pellet.name == "pellet":
+                pellet.linear_update(dt)
+            elif pellet.name == "fireball":
+                if pellet.parabolic_update(dt):
+                    TrainFire(self.fire_group, self.ground_fire_frames, pellet.pos.x)
             pellet.draw(screen)
+
         for expl in self.hit_explosion_group:
             expl.update(dt)
             expl.draw(screen)
 
+        # UI Update
         for UI in self.UI_group:
             UI.draw(screen)

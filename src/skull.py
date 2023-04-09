@@ -30,7 +30,7 @@ class Skull(pg.sprite.Sprite):
                 self.x_offset - self.img.get_width() / 4, self.img.get_height() + 15
             ),
             pg.Vector2(
-                self.x_offset + self.img.get_width() / 4, self.img.get_height() + 15
+                self.x_offset + self.img.get_width() / 4 - 1, self.img.get_height() + 15
             ),
         ]
         self.current_frame = 0

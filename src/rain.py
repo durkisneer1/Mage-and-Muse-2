@@ -5,15 +5,20 @@ from src.constants import *
 
 
 class Rain(pg.sprite.Sprite):
-    def __init__(self, group: pg.sprite.Group, rain_images: list[pg.Surface]):
+    def __init__(
+        self,
+        group: pg.sprite.Group,
+        rain_surface: pg.Surface,
+        colors: tuple[tuple[int, int, int], ...],
+    ):
         super().__init__(group)
 
-        img = random.choice(rain_images)
-        self.img = pg.transform.rotate(img, 30)
+        self.img = rain_surface.copy()
+        self.img.fill(random.choice(colors))
         self.rect = pg.FRect(self.img.get_rect())
-        self.pos = pg.Vector2(random.randint(-150, 800), random.randint(-100, 0))
-        self.speed = random.randint(10, 20)
-        self.momentum = 5
+        self.pos = pg.Vector2(random.randint(-150, 800), 0)
+        self.speed = 30  # random.randint(10, 20)
+        self.momentum = 6
 
     def update(self, dt: float):
         self.pos.y += self.speed * dt

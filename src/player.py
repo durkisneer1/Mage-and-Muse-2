@@ -7,11 +7,11 @@ from src.constants import *
 class Player:
     def __init__(self):
         self.anim_states = {
-            "run": import_folder("res/mage/run"),
-            "fall": import_folder("res/mage/fall"),
-            "hit": import_folder("res/mage/hit"),
-            "jump": import_folder("res/mage/jump"),
-            "idle": import_folder("res/mage/idle"),
+            "run": import_folder("./res/mage/run"),
+            "fall": import_folder("./res/mage/fall"),
+            "hit": import_folder("./res/mage/hit"),
+            "jump": import_folder("./res/mage/jump"),
+            "idle": import_folder("./res/mage/idle"),
         }
 
         self.frame_list = self.anim_states["idle"]
@@ -95,7 +95,7 @@ class Player:
             self.dashed = False
 
         # Horizontal Bounding
-        self.pos.x = min(max(self.pos.x, 0), WIN_WIDTH - self.img.get_width())
+        self.pos.x = min(max(self.pos.x, 0), WIN_WIDTH)
 
         # Vertical Bounding
         if self.pos.y > WIN_HEIGHT - self.img.get_height() - self.y_offset:

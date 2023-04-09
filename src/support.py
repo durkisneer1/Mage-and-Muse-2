@@ -18,3 +18,14 @@ def import_folder(
                 image_surf = pg.transform.scale_by(image_surf, scale)
             surf_list.append(image_surf)
     return surf_list
+
+
+image_load = pg.image.load
+
+
+def new_image_load(*args, **kwargs):
+    print("Image loaded:", args[0])
+    return image_load(*args, **kwargs)
+
+
+pg.image.load = new_image_load
