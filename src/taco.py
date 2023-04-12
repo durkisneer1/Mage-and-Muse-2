@@ -5,16 +5,19 @@ from src.constants import *
 
 
 class Taco(pg.sprite.Sprite):
-    def __init__(self, group: pg.sprite.Group, img: pg.Surface):
+    def __init__(
+        self, group: pg.sprite.Group, taco_image: pg.Surface, cheese_image: pg.Surface
+    ):
         super().__init__(group)
+        self.cheese_img = cheese_image
 
-        self.img = img
-        self.rot_img = self.img.copy()
+        self.taco_img = taco_image
+        self.rot_img = self.taco_img.copy()
         self.side = random.choice(["left", "right"])
         if self.side == "right":
-            self.img = pg.transform.flip(self.img, True, False)
+            self.taco_img = pg.transform.flip(self.taco_img, True, False)
 
-        self.size = self.img.get_size()
+        self.size = self.taco_img.get_size()
         start_x = (
             -self.size[0] if self.side == "left" else WIN_WIDTH + (self.size[0] / 2)
         )
@@ -39,7 +42,7 @@ class Taco(pg.sprite.Sprite):
     def throw_cheese(self):
         current_tick = pg.time.get_ticks() // 50
         if current_tick > self.old_tick:
-            Cheese(self.cheese_group, self.pos.copy(), self.side)
+            Cheese(self.cheese_group, self.cheese_img, self.pos.copy(), self.side)
             self.old_tick = current_tick
 
     def draw_hitbox(self):
@@ -53,7 +56,7 @@ class Taco(pg.sprite.Sprite):
         rad = m.radians(self.angle)
         pivot = m.sin(rad) * 20
 
-        self.rot_img = pg.transform.rotate(self.img, pivot)
+        self.rot_img = pg.transform.rotate(self.taco_img, pivot)
         self.rect = self.rot_img.get_rect(center=self.pos)
 
         self.throw_cheese()
@@ -72,11 +75,16 @@ class Taco(pg.sprite.Sprite):
 
 
 class Cheese(pg.sprite.Sprite):
-    def __init__(self, group: pg.sprite.Group, spawn_pos: pg.Vector2, side: str):
+    def __init__(
+        self,
+        group: pg.sprite.Group,
+        image: pg.Surface,
+        spawn_pos: pg.Vector2,
+        side: str,
+    ):
         super().__init__(group)
 
-        self.img = pg.image.load("./res/taco/cheese.png").convert()
-
+        self.img = image
         self.pos = spawn_pos
         self.fall_speed = random.randint(10, 20)
         self.momentum_speed = 5

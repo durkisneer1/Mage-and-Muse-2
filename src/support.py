@@ -2,6 +2,10 @@ from os import walk
 import pygame as pg
 
 
+image_load = pg.image.load
+pg_surface = pg.Surface
+
+
 def import_folder(
     path: str, is_alpha: bool = True, scale: float = 1
 ) -> list[pg.Surface]:
@@ -20,12 +24,15 @@ def import_folder(
     return surf_list
 
 
-image_load = pg.image.load
-
-
 def new_image_load(*args, **kwargs):
     print("Image loaded:", args[0])
     return image_load(*args, **kwargs)
 
 
+def new_surface(*args, **kwargs):
+    print("Surface created")
+    return pg_surface(*args, **kwargs)
+
+
 pg.image.load = new_image_load
+pg.Surface = new_surface

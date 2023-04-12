@@ -1,4 +1,5 @@
 import pygame as pg
+
 from src.constants import *
 from src.states.gameplay import Gameplay
 from src.states.pause import Pause
