@@ -14,25 +14,15 @@ class Maraca(pg.sprite.Sprite):
         self.frame_list = self.anim_states["idle"]
         self.current_frame = 0
         self.img = self.anim_states["idle"][self.current_frame]  # pg.Surface
+        self.img_width = self.img.get_width()
         self.rect = pg.FRect(self.img.get_rect())
         self.pos = pg.Vector3(0, WIN_HEIGHT - self.img.get_height(), 0)
 
-        # start_x = 0 if brother else WIN_WIDTH - self.img.get_width()
-
         self.angle = 0
         self.current_frame = 0
-        self.speed = 6
-        self.health = 50  # Default 50
-
-        multiplier = 1 if brother else -1
-        positions_list = []
-        for deg in range(0, 360):
-            rad = math.radians(deg * multiplier)
-            x = math.sin(rad) * 125 + (WIN_WIDTH / 2) - (self.img.get_width() / 3)
-            z = math.cos(rad) * multiplier
-            positions_list.append((x, z))
-        self.positions = tuple(positions_list)
-        print(len(self.positions))
+        self.multiplier = 1 if brother else -1
+        self.speed = 6 * self.multiplier
+        self.health = 1  # Default 50
 
     @staticmethod
     @functools.cache
@@ -47,17 +37,18 @@ class Maraca(pg.sprite.Sprite):
     def update(self, dt: float):
         self.animate(dt)
 
-        index = int(self.angle)
-        self.pos.x = self.positions[index][0]
-        self.pos.z = self.positions[index][1]
         self.angle += dt * self.speed
         self.angle %= 360
+        rad = math.radians(self.angle)
+
+        self.pos.x = (math.sin(rad) * 125) + (WIN_WIDTH / 2) - (self.img_width / 3)
+        self.pos.z = math.cos(rad) * self.multiplier
 
         self.img = Maraca.cache_scaled(self.img, ((self.pos.z / 4) + 0.75))
 
     def draw_collider(self):
         box_height = self.img.get_height() / 3
-        box_width = self.img.get_width() - (self.img.get_width() / 5)
+        box_width = self.img_width - (self.img_width / 5)
         x_offset = self.pos.x + (box_width / 8)
         y_offset = self.pos.y + (box_height / 8)
         self.rect.topleft = x_offset, y_offset

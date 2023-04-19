@@ -14,7 +14,7 @@ class Bull(pg.sprite.Sprite):
         self.side = random.choice(["left", "right"])
         start_x = -self.img.get_width() if self.side == "left" else WIN_WIDTH
         self.pos = pg.Vector2(start_x, WIN_HEIGHT - self.img.get_height() - 25)
-        self.pos_offset = 12, 5
+        self.pos_offset = (12, 5)
         hitbox_size = (
             self.img.get_width() - self.pos_offset[0],
             self.img.get_height() - self.pos_offset[1],
@@ -43,7 +43,7 @@ class Bull(pg.sprite.Sprite):
         if self.health == 0:
             self.kill()
 
-    def update(self, dt: float) -> bool:
+    def update(self, dt: float):
         self.animate(dt)
 
         if self.side == "left":
@@ -56,7 +56,8 @@ class Bull(pg.sprite.Sprite):
         self.pos.x += self.speed * dt
 
         self.hitbox = self.rect
-        return self.pos.x < -self.img.get_width() or self.pos.x > WIN_WIDTH
+        if self.pos.x < -self.img.get_width() or self.pos.x > WIN_WIDTH:
+            self.kill()
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos)

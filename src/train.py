@@ -7,23 +7,23 @@ from src.constants import *
 class Train:
     def __init__(self):
         self.img = pg.image.load("./res/train/Train.png").convert_alpha()
-        img_height = self.img.get_height()
 
         x_offset = -8
-        self.pos = pg.Vector2(x_offset, WIN_HEIGHT - img_height)
+        self.pos = pg.Vector2(x_offset, WIN_HEIGHT - self.img.get_height())
         self.speed = 250
         self.angle = 0
+        self.step = 90
 
         positions_list = []
-        for deg in range(0, 360):
+        for deg in range(0, 360, self.step):
             rad = math.radians(deg)
             x_pos = math.sin(rad) + x_offset
-            positions_list.append((x_pos, WIN_HEIGHT - img_height))
+            positions_list.append(x_pos)
         self.positions = tuple(positions_list)
 
     def update(self, dt: float):
-        index = int(self.angle)
-        self.pos.x = self.positions[index][0]
+        index = int(self.angle / self.step)
+        self.pos.x = self.positions[index]
         self.angle += dt * self.speed
         self.angle %= 360
 
@@ -50,7 +50,7 @@ class TrainFire(pg.sprite.Sprite):
         self.pos = pg.Vector2(
             x_offset - fire_size[0] / 2, WIN_HEIGHT - fire_size[1] - 28
         )
-        self.hitbox = pg.FRect(self.pos, fire_size)
+        self.hitbox = pg.FRect((self.pos.x, self.pos.y + fire_size[1] * 2 / 3), (fire_size[0], fire_size[1] / 3))
 
         self.loops = 0
 
@@ -66,4 +66,3 @@ class TrainFire(pg.sprite.Sprite):
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.fire_img, self.pos)
-        # pg.draw.rect(screen, (255, 0, 0), self.hitbox)

@@ -24,19 +24,18 @@ game_states = {
 }
 
 
-def end_game(fps_tracker: dict) -> bool:
+def end_game(fps_tracker: dict):
     print("\n")
     total = sum(v for v in fps_tracker.values())
     for k in sorted(fps_tracker.keys()):
         print(f"FPS: {k}\t{100 * fps_tracker[k] / total:.2f}%")
-    return False
+    pg.quit()
 
 
-def main():
+def main() -> None:
     current_state = game_states["title"]
     fps_tracker = {}
-    run = True
-    while run:
+    while True:
         dt = clock.tick() / 100
         keys = pg.key.get_pressed()
         mouse_click = pg.mouse.get_pressed()
@@ -49,19 +48,21 @@ def main():
 
         for ev in events:
             if ev.type == pg.QUIT:
-                run = end_game(fps_tracker)
+                end_game(fps_tracker)
+                return
 
         if s := current_state.user_input(
             events, mouse_click, mouse_pos, dt, mouse_click
         ):
             if s == "exit":
-                run = end_game(fps_tracker)
-            else:
-                if s == "gameplay" and current_state == game_states["title"]:
-                    game_states[s] = Gameplay()
-                current_state = game_states[s]
-                if s == "pause" or s == "controls":
-                    current_state.last_frame = screen.copy()
+                end_game(fps_tracker)
+                return
+
+            if s == "gameplay" and current_state == game_states["title"]:
+                game_states[s] = Gameplay()
+            current_state = game_states[s]
+            if s == "pause" or s == "controls":
+                current_state.last_frame = screen.copy()
 
         current_state.update(screen, keys, mouse_pos, events, dt)
         pg.display.flip()

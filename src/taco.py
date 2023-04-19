@@ -41,14 +41,16 @@ class Taco(pg.sprite.Sprite):
 
     def throw_cheese(self):
         current_tick = pg.time.get_ticks() // 50
-        if current_tick > self.old_tick:
+        if current_tick > self.old_tick and (
+            -self.size[0] < self.pos.x < WIN_WIDTH + self.size[0]
+        ):
             Cheese(self.cheese_group, self.cheese_img, self.pos.copy(), self.side)
             self.old_tick = current_tick
 
     def draw_hitbox(self):
         self.hitbox.topleft = (self.pos.x - self.space, 0)
 
-    def update(self, dt: float) -> bool:
+    def update(self, dt: float):
         self.pos.x += self.speed * dt
         self.angle += dt * 100
         self.angle %= 360
@@ -62,10 +64,8 @@ class Taco(pg.sprite.Sprite):
         self.throw_cheese()
         for cheese in self.cheese_group:
             cheese.update(dt)
-
-        return (
-            self.rect.right < -self.size[0] or self.rect.left > WIN_WIDTH + self.size[1]
-        )
+        if len(self.cheese_group) == 0:
+            self.kill()
 
     def draw(self, screen: pg.Surface):
         for cheese in self.cheese_group:
@@ -95,6 +95,9 @@ class Cheese(pg.sprite.Sprite):
 
     def update(self, dt: float):
         self.pos.y += dt * self.fall_speed
+        if self.pos.y > WIN_HEIGHT:
+            self.kill()
+
         if self.side == "left":
             self.pos.x += dt * self.momentum_speed
         elif self.side == "right":

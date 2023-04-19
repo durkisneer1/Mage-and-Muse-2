@@ -11,12 +11,11 @@ class Pellet(pg.sprite.Sprite):
         img: pg.Surface,
         dest: tuple[int, int] | float,
         turn_speed: int = 1,
-        name: str = "pellet",
         move_method: str = "linear",
     ):
         super().__init__(groups)
 
-        self.name = name
+        self.move_method = move_method
         self.speed = 20
         self.gravity = 3
 
@@ -27,9 +26,9 @@ class Pellet(pg.sprite.Sprite):
         self.img = img
         self.rect = pg.FRect(self.img.get_rect(topleft=self.pos))
 
-        if move_method == "linear":
+        if self.move_method == "linear":
             self.vel = self.linear_direction(dest)
-        elif move_method == "parabolic":
+        elif self.move_method == "parabolic":
             self.vel = self.parabolic_direction(dest)
 
         self.turn_tick = 0
@@ -52,7 +51,7 @@ class Pellet(pg.sprite.Sprite):
         unit_vec = pg.Vector2(dx, dy).normalize() * self.speed
         return unit_vec
 
-    def parabolic_update(self, dt: float):
+    def parabolic_update(self, dt: float) -> bool:
         self.rotate(dt)
 
         self.vel.y += self.gravity * dt

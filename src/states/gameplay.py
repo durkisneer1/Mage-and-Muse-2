@@ -27,7 +27,6 @@ class Gameplay:
         # Fire Setup
         self.fireball_image = pg.image.load(Images.fireball_img).convert_alpha()
         self.ground_fire_frames = import_folder(Images.ground_fire_frames, scale=1.5)
-        self.fire_group = pg.sprite.Group()
 
         # Tint Setup
         self.tint_surf = pg.Surface(WIN_SIZE, pg.SRCALPHA)
@@ -79,8 +78,14 @@ class Gameplay:
         mouse_click: tuple[bool, bool, bool],
         mouse_pos: tuple[int, int],
         dt: float,
-        *args,
-    ):
+        *args,  # NOQA
+    ) -> str:
+        for ev in events:
+            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
+                return "pause"
+        if self.player.health <= 0:
+            return "exit"
+
         self.pellet_delay += dt
         if self.pellet_delay >= self.max_delay:
             self.pellet_delay = self.max_delay
@@ -94,14 +99,7 @@ class Gameplay:
             )
             self.pellet_delay = 0
 
-        for ev in events:
-            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
-                return "pause"
-
-        if self.player.health <= 0:
-            return "exit"
-
-    def adjust_ui(self, target_obj: any):
+    def adjust_ui(self, target_obj: any) -> None:
         target_obj.health -= 1
         for UI in self.UI_group:
             if target_obj.health <= 0 and hasattr(target_obj, "kill"):
@@ -111,7 +109,7 @@ class Gameplay:
             if UI.target == target_obj:
                 UI.update(target_obj)
 
-    def collision(self):
+    def collision(self) -> None:
         for boss in self.boss_group:
             for pellet in self.pellet_group:
                 if boss.rect.colliderect(pellet.rect) and boss.pos.z > 0:
@@ -130,6 +128,8 @@ class Gameplay:
             ):
                 self.player.hit()
                 self.adjust_ui(self.player)
+            if attack.rect is None:
+                return
             for pellet in self.pellet_group:
                 if attack.rect.colliderect(pellet.rect):
                     PelletExplode(
@@ -149,7 +149,6 @@ class Gameplay:
                         Bull(self.attack_group, self.bull_frames)
                     elif attack_type == AttackType.TACO:
                         Taco(self.attack_group, self.taco_img, self.cheese_img)
-
                 else:  # Skull Active
                     spawn = (
                         self.active_skull.rect.centerx,
@@ -162,9 +161,8 @@ class Gameplay:
                         self.fireball_image,
                         distance,
                         turn_speed=2,
-                        name="fireball",
                         move_method="parabolic",
-                    )
+                    )  # Fireball
 
             elif ev.type == self.RAIN_EVENT and not bool(
                 self.boss_group
@@ -202,11 +200,6 @@ class Gameplay:
             self.active_skull.update(dt)
             self.active_skull.draw(screen)
 
-            # Train Fire Update
-            for fire in self.fire_group:
-                fire.update(dt)
-                fire.draw(screen)
-
             # Rain Update
             for rain in self.rain_group:
                 rain.update(dt)
@@ -226,17 +219,16 @@ class Gameplay:
 
         # Bull Update
         for attack in self.attack_group:
-            if attack.update(dt):
-                attack.kill()
+            attack.update(dt)
             attack.draw(screen)
 
         # Pellet Update
         for pellet in self.pellet_group:
-            if pellet.name == "pellet":
+            if pellet.move_method == "linear":
                 pellet.linear_update(dt)
-            elif pellet.name == "fireball":
+            elif pellet.move_method == "parabolic":
                 if pellet.parabolic_update(dt):
-                    TrainFire(self.fire_group, self.ground_fire_frames, pellet.pos.x)
+                    TrainFire(self.attack_group, self.ground_fire_frames, pellet.pos.x)
             pellet.draw(screen)
 
         for expl in self.hit_explosion_group:
