@@ -30,7 +30,7 @@ class Skull(pg.sprite.Sprite):
                 self.x_offset - self.img.get_width() / 4, self.img.get_height() + 15
             ),
             pg.Vector2(
-                self.x_offset + self.img.get_width() / 4 - 1, self.img.get_height() + 15
+                self.x_offset + self.img.get_width() / 4, self.img.get_height() + 15
             ),
         ]
         self.current_frame = 0
@@ -40,6 +40,9 @@ class Skull(pg.sprite.Sprite):
         self.angle = 0
         self.speed = 12
         self.amplitude = amplitude
+
+    def hit(self):
+        ...
 
     def animate(self, dt):
         self.current_frame %= self.max_frames

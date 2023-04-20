@@ -119,6 +119,7 @@ class Player:
         self.frame_list = self.anim_states[status]
 
     def hit(self):
+        self.health -= 1
         hit_time = pg.time.get_ticks()
         self.jump(scalar=0.75)
         self.on_cooldown = True

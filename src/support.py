@@ -7,7 +7,7 @@ pg_surface = pg.Surface
 
 
 def import_folder(
-    path: str, is_alpha: bool = True, scale: float = 1
+    path: str, is_alpha: bool = True, scale: float = 1, grayscale: bool = False
 ) -> list[pg.Surface]:
     surf_list = []
     for _, __, img_file in walk(path):
@@ -20,6 +20,8 @@ def import_folder(
             )
             if scale != 1:
                 image_surf = pg.transform.scale_by(image_surf, scale)
+            if grayscale:
+                image_surf = pg.transform.grayscale(image_surf)
             surf_list.append(image_surf)
     return surf_list
 

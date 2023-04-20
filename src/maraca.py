@@ -1,5 +1,6 @@
 import functools
 import math
+from time import time
 
 import pygame as pg
 from src.constants import WIN_WIDTH, WIN_HEIGHT
@@ -9,7 +10,10 @@ from src.support import import_folder
 class Maraca(pg.sprite.Sprite):
     def __init__(self, group: pg.sprite.Group, brother: bool):
         super().__init__(group)
-        self.anim_states = {"idle": import_folder("./res/maraca/idle")}
+        self.anim_states = {
+            "idle": import_folder("./res/maraca"),
+            "hit": import_folder("./res/maraca", grayscale=True),
+        }
 
         self.frame_list = self.anim_states["idle"]
         self.current_frame = 0
@@ -22,7 +26,15 @@ class Maraca(pg.sprite.Sprite):
         self.current_frame = 0
         self.multiplier = 1 if brother else -1
         self.speed = 6 * self.multiplier
-        self.health = 1  # Default 50
+        self.health = 50  # Default 50
+
+        self.hit_time = 0
+        self.animate_death = False
+
+    def hit(self):
+        self.health -= 1
+        self.hit_time = pg.time.get_ticks()
+        self.frame_list = self.anim_states["hit"]
 
     @staticmethod
     @functools.cache
@@ -30,12 +42,21 @@ class Maraca(pg.sprite.Sprite):
         return pg.transform.scale_by(img, factor)
 
     def animate(self, dt: float):
+        if pg.time.get_ticks() - self.hit_time > 100:
+            self.frame_list = self.anim_states["idle"]
+
         self.current_frame %= len(self.frame_list)
         self.img = self.frame_list[int(self.current_frame)]
         self.current_frame += dt * 0.8
 
     def update(self, dt: float):
         self.animate(dt)
+
+        if self.animate_death:
+            self.speed *= 1 + dt / 4
+            self.pos.y -= dt * abs(self.speed) / 4
+            if self.pos.y < -self.img.get_height():
+                self.kill()
 
         self.angle += dt * self.speed
         self.angle %= 360

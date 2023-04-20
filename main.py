@@ -9,7 +9,7 @@ from src.states.controls import Controls
 
 pg.init()
 
-screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)
+screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)  # pg.FULLSCREEN
 pg.display.set_caption("Mage and Muse 2")
 clock = pg.time.Clock()
 font = pg.Font("res/fonts/arcade_in.ttf", 32)

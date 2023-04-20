@@ -100,9 +100,13 @@ class Gameplay:
             self.pellet_delay = 0
 
     def adjust_ui(self, target_obj: any) -> None:
-        target_obj.health -= 1
+        target_obj.hit()
         for UI in self.UI_group:
-            if target_obj.health <= 0 and hasattr(target_obj, "kill"):
+            if target_obj.health <= 0 and hasattr(target_obj, "animate_death") and not target_obj.animate_death:
+                target_obj.animate_death = True
+                UI.kill()
+                return
+            if target_obj.health <= 0 and hasattr(target_obj, "kill") and not target_obj.animate_death:
                 target_obj.kill()
                 UI.kill()
                 return
@@ -126,7 +130,6 @@ class Gameplay:
                 and not self.player.on_cooldown
                 and not self.player.dashed
             ):
-                self.player.hit()
                 self.adjust_ui(self.player)
             if attack.rect is None:
                 return

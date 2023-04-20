@@ -50,7 +50,10 @@ class TrainFire(pg.sprite.Sprite):
         self.pos = pg.Vector2(
             x_offset - fire_size[0] / 2, WIN_HEIGHT - fire_size[1] - 28
         )
-        self.hitbox = pg.FRect((self.pos.x, self.pos.y + fire_size[1] * 2 / 3), (fire_size[0], fire_size[1] / 3))
+        self.hitbox = pg.FRect(
+            (self.pos.x, self.pos.y + fire_size[1] * 2 / 3),
+            (fire_size[0], fire_size[1] / 3),
+        )
 
         self.loops = 0
 
