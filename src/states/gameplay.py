@@ -87,8 +87,7 @@ class Gameplay:
             return "exit"
 
         self.pellet_delay += dt
-        if self.pellet_delay >= self.max_delay:
-            self.pellet_delay = self.max_delay
+        self.pellet_delay = min(self.pellet_delay, self.max_delay)
 
         if mouse_click[0] and self.pellet_delay >= self.max_delay:
             Pellet(
@@ -124,6 +123,7 @@ class Gameplay:
                         self.pellet_frames,
                     )
                     self.adjust_ui(boss)
+                    
         for attack in self.attack_group:
             if (
                 attack.hitbox.colliderect(self.player.rect)

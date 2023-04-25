@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+
 from src.constants import *
 
 
@@ -56,8 +57,10 @@ class Bull(pg.sprite.Sprite):
         self.pos.x += self.speed * dt
 
         self.hitbox = self.rect
-        if self.pos.x < -self.img.get_width() or self.pos.x > WIN_WIDTH:
-            self.kill()
+
+        if -self.img.get_width() < self.pos.x < WIN_WIDTH:
+            return
+        self.kill()
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.img, self.pos)
