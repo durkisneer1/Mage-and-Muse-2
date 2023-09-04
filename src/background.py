@@ -1,6 +1,6 @@
 import pygame as pg
 from src.constants import WIN_WIDTH, WIN_HEIGHT
-from src.support import import_folder
+from src.utils import import_folder
 
 
 class Background:

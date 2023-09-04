@@ -7,12 +7,16 @@ from src.constants import *
 class Bull(pg.sprite.Sprite):
     def __init__(self, group: pg.sprite.Group, anim_frames: list[pg.Surface]):
         super().__init__(group)
+        self.side = random.choice(["left", "right"])
 
-        self.frame_list = anim_frames
+        self.frame_list = (
+            [pg.transform.flip(i, True, False) for i in anim_frames]
+            if self.side == "right"
+            else anim_frames
+        )
         self.max_frames = len(self.frame_list)
         self.img = self.frame_list[0]
 
-        self.side = random.choice(["left", "right"])
         start_x = -self.img.get_width() if self.side == "left" else WIN_WIDTH
         self.pos = pg.Vector2(start_x, WIN_HEIGHT - self.img.get_height() - 25)
         self.pos_offset = (12, 5)
@@ -31,12 +35,7 @@ class Bull(pg.sprite.Sprite):
 
     def animate(self, dt: float):
         self.current_frame %= self.max_frames
-        if self.side == "left":
-            self.img = self.frame_list[int(self.current_frame)]
-        else:
-            self.img = pg.transform.flip(
-                self.frame_list[int(self.current_frame)], True, False
-            )
+        self.img = self.frame_list[int(self.current_frame)]
         self.current_frame += self.anim_speed * dt
 
     def hit(self):
@@ -44,7 +43,7 @@ class Bull(pg.sprite.Sprite):
         if self.health == 0:
             self.kill()
 
-    def update(self, dt: float):
+    def update(self, dt: float) -> None:
         self.animate(dt)
 
         if self.side == "left":
@@ -58,7 +57,7 @@ class Bull(pg.sprite.Sprite):
 
         self.hitbox = self.rect
 
-        if -self.img.get_width() < self.pos.x < WIN_WIDTH:
+        if -self.img.get_width() - 1 <= self.pos.x <= WIN_WIDTH:
             return
         self.kill()
 

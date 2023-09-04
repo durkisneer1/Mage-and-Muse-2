@@ -27,7 +27,7 @@ class Rain(pg.sprite.Sprite):
 
         self.img = self.rain_surf.copy()
         self.img.fill(random.choice(self.rain_colors))
-        self.rect = pg.FRect(self.img.get_rect())
+        self.rect = self.img.get_frect()
         self.pos = pg.Vector2(random.randint(-150, 800), 0)
         self.speed = 30  # random.randint(10, 20)
         self.momentum = 6

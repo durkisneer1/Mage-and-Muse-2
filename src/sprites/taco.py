@@ -22,7 +22,7 @@ class Taco(pg.sprite.Sprite):
             -self.size[0] if self.side == "left" else WIN_WIDTH + (self.size[0] / 2)
         )
         self.pos = pg.Vector2(start_x, self.size[1])
-        self.rect = self.rot_img.get_rect(center=self.pos)
+        self.rect = self.rot_img.get_frect(center=self.pos)
 
         self.speed = 14 if self.side == "left" else -14
         self.health = 2
@@ -35,9 +35,7 @@ class Taco(pg.sprite.Sprite):
         self.hitbox = pg.FRect((self.pos.x - self.space, 0), (1, WIN_HEIGHT))
 
     def hit(self):
-        self.health -= 1
-        if self.health == 0:
-            self.kill()
+        self.health -= 1; self.kill() if self.health == 0 else None
 
     def throw_cheese(self):
         current_tick = pg.time.get_ticks() // 50
@@ -59,7 +57,7 @@ class Taco(pg.sprite.Sprite):
         pivot = m.sin(rad) * 20
 
         self.rot_img = pg.transform.rotate(self.taco_img, pivot)
-        self.rect = self.rot_img.get_rect(center=self.pos)
+        self.rect = self.rot_img.get_frect(center=self.pos)
 
         self.throw_cheese()
         for cheese in self.cheese_group:
@@ -93,10 +91,11 @@ class Cheese(pg.sprite.Sprite):
 
         self.turn_direction = random.choice([-1, 1])
 
-    def update(self, dt: float):
+    def update(self, dt: float) -> None:
         self.pos.y += dt * self.fall_speed
         if self.pos.y > WIN_HEIGHT:
             self.kill()
+            return
 
         if self.side == "left":
             self.pos.x += dt * self.momentum_speed

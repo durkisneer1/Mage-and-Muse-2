@@ -1,6 +1,6 @@
 import pygame as pg
 import math as m
-from src.support import import_folder
+from src.utils import import_folder
 from src.constants import *
 
 
@@ -21,7 +21,7 @@ class Player:
         self.pos = pg.Vector2(
             WIN_WIDTH / 2, WIN_HEIGHT - self.img.get_height() - self.y_offset
         )
-        self.rect = pg.FRect(self.img.get_rect(midtop=self.pos))
+        self.rect = self.img.get_frect(midtop=self.pos)
 
         self.grav = 12
         self.on_ground = True
@@ -39,7 +39,7 @@ class Player:
         self.in_air = False
         self.air_time = 0
 
-        self.health = 5  # 3
+        self.health = 50  # default set 5
 
     def animate(self, dt: float):
         self.current_frame %= len(self.frame_list)
@@ -136,7 +136,7 @@ class Wand:
         raw_img = pg.image.load("./res/weapon/wand/Wand.png").convert_alpha()
         self.img = pg.transform.rotate(raw_img, -135)
         self.rot_img = self.img
-        self.rect = self.rot_img.get_rect()
+        self.rect = self.rot_img.get_frect()
 
     def rotate(self, mouse_pos: tuple[int, int]):
         rad = m.atan2(
@@ -146,7 +146,7 @@ class Wand:
 
     def update(self, player_pos: tuple, mouse_pos: tuple[int, int]):
         self.rotate(mouse_pos)
-        self.rect = self.rot_img.get_rect(center=(player_pos[0], player_pos[1] + 5))
+        self.rect = self.rot_img.get_frect(center=(player_pos[0], player_pos[1] + 5))
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.rot_img, self.rect)

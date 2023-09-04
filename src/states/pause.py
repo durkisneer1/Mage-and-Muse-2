@@ -13,7 +13,7 @@ class Pause:
         self.tint.fill((0, 0, 0, 160))
 
         self.window = pg.image.load(Images.window_img).convert()
-        self.window_rect = self.window.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
+        self.window_rect = self.window.get_frect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
         self.pause_title = Button(self.pos, "PAUSED", font)
         self.menu_button = Button(self.pos + pg.Vector2(0, 40), "Menu", font)
@@ -23,7 +23,7 @@ class Pause:
         self,
         events: list[pg.event.Event],
         *args,
-    ):
+    ) -> str:
         for ev in events:
             if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
                 if self.menu_button.check_collision(ev.pos):

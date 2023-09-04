@@ -18,8 +18,8 @@ class Button:
         self.text_bottom = pg.transform.scale_by(
             font.render(text, False, "black"), scale_factor
         )
-        self.rect_top = self.text_top.get_rect(center=self.pos)
-        self.rect_bottom = self.text_bottom.get_rect(center=self.pos + offset)
+        self.rect_top = self.text_top.get_frect(center=self.pos)
+        self.rect_bottom = self.text_bottom.get_frect(center=self.pos + offset)
 
     def check_collision(self, mouse_pos: tuple[int, int]) -> bool:
         return self.rect_top.collidepoint(mouse_pos)

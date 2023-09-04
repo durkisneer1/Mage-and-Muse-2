@@ -1,10 +1,9 @@
 import functools
 import math
-from time import time
 
 import pygame as pg
 from src.constants import WIN_WIDTH, WIN_HEIGHT
-from src.support import import_folder
+from src.utils import import_folder
 
 
 class Maraca(pg.sprite.Sprite):
@@ -12,14 +11,14 @@ class Maraca(pg.sprite.Sprite):
         super().__init__(group)
         self.anim_states = {
             "idle": import_folder("./res/maraca"),
-            "hit": import_folder("./res/maraca", grayscale=True),
+            "hit": import_folder("./res/maraca", highlight=True),
         }
 
         self.frame_list = self.anim_states["idle"]
         self.current_frame = 0
         self.img = self.anim_states["idle"][self.current_frame]  # pg.Surface
         self.img_width = self.img.get_width()
-        self.rect = pg.FRect(self.img.get_rect())
+        self.rect = self.img.get_frect()
         self.pos = pg.Vector3(0, WIN_HEIGHT - self.img.get_height(), 0)
 
         self.angle = 0
@@ -31,18 +30,18 @@ class Maraca(pg.sprite.Sprite):
         self.hit_time = 0
         self.animate_death = False
 
+    @staticmethod
+    @functools.cache
+    def cache_scaled(img: pg.Surface, factor: float) -> pg.Surface:
+        return pg.transform.scale_by(img, factor)
+
     def hit(self):
         self.health -= 1
         self.hit_time = pg.time.get_ticks()
         self.frame_list = self.anim_states["hit"]
 
-    @staticmethod
-    @functools.cache
-    def cache_scaled(img: pg.Surface, factor: float):
-        return pg.transform.scale_by(img, factor)
-
     def animate(self, dt: float):
-        if pg.time.get_ticks() - self.hit_time > 100:
+        if pg.time.get_ticks() - self.hit_time > 80:
             self.frame_list = self.anim_states["idle"]
 
         self.current_frame %= len(self.frame_list)

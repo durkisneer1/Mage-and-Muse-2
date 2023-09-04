@@ -13,7 +13,7 @@ class Controls:
         self.tint.fill((0, 0, 0, 160))
 
         self.window = pg.image.load(Images.window_img).convert()
-        self.window_rect = self.window.get_rect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
+        self.window_rect = self.window.get_frect(center=(WIN_WIDTH / 2, WIN_HEIGHT / 2))
 
         self.controls_title = Button(self.pos, "CONTROLS", font)
         self.movement = Button(self.pos + pg.Vector2(0, 30), "WASD to move", font, 0.5)
@@ -33,7 +33,7 @@ class Controls:
         self,
         events: list[pg.event.Event],
         *args,
-    ):
+    ) -> str:
         for ev in events:
             if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
                 if self.back_button.check_collision(ev.pos):

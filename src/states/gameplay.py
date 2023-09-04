@@ -2,16 +2,16 @@ import pygame as pg
 import random
 
 from src.constants import *
-from src.support import import_folder
+from src.utils import import_folder
 from src.background import Background
 from src.train import Train, TrainFire
 from src.enums import AttackType, Images
-from src.player import Player, Wand
-from src.maraca import Maraca
-from src.bull import Bull
+from src.sprites.player import Player, Wand
+from src.sprites.maraca import Maraca
+from src.sprites.bull import Bull
 from src.pellet import Pellet, PelletExplode
-from src.skull import Skull
-from src.taco import Taco
+from src.sprites.skull import Skull
+from src.sprites.taco import Taco
 from src.UI import HealthBar, PlayerHealth
 from src.rain import Rain
 
@@ -47,7 +47,7 @@ class Gameplay:
         fire_eye_frames = import_folder(Images.fire_eye_frames, scale=1.5)
         Skull(self.boss_group, Images.idle_skull_img, flower_frames, 15, 3)
         self.active_skull = Skull(
-            None, Images.active_skull_img, fire_eye_frames, 12, 20
+            None, Images.active_skull_img, fire_eye_frames, 12, 20, True
         )
 
         # Attacks Setup
@@ -71,6 +71,9 @@ class Gameplay:
         HealthBar(self.UI_group, (0, 0), "left", maraca_left)  # Maraca Health
         HealthBar(self.UI_group, (WIN_WIDTH, 0), "right", maraca_right)  # Maraca Health
         PlayerHealth(self.UI_group, self.player)  # Player Health
+
+        # Game State
+        self.first_level = True
 
     def user_input(
         self,
@@ -101,21 +104,21 @@ class Gameplay:
     def adjust_ui(self, target_obj: any) -> None:
         target_obj.hit()
         for UI in self.UI_group:
-            if target_obj.health <= 0 and hasattr(target_obj, "animate_death") and not target_obj.animate_death:
-                target_obj.animate_death = True
-                UI.kill()
-                return
-            if target_obj.health <= 0 and hasattr(target_obj, "kill") and not target_obj.animate_death:
-                target_obj.kill()
-                UI.kill()
-                return
             if UI.target == target_obj:
+                if (
+                    target_obj.health <= 0
+                    and hasattr(target_obj, "animate_death")
+                    and not target_obj.animate_death
+                ):
+                    target_obj.animate_death = True
+                    UI.kill()
+                    return
                 UI.update(target_obj)
 
     def collision(self) -> None:
         for boss in self.boss_group:
             for pellet in self.pellet_group:
-                if boss.rect.colliderect(pellet.rect) and boss.pos.z > 0:
+                if boss.rect.colliderect(pellet.rect) and boss.pos.z > 0 and pellet.name == "player":
                     PelletExplode(
                         pellet,
                         self.hit_explosion_group,
@@ -123,7 +126,7 @@ class Gameplay:
                         self.pellet_frames,
                     )
                     self.adjust_ui(boss)
-                    
+
         for attack in self.attack_group:
             if (
                 attack.hitbox.colliderect(self.player.rect)
@@ -134,7 +137,7 @@ class Gameplay:
             if attack.rect is None:
                 return
             for pellet in self.pellet_group:
-                if attack.rect.colliderect(pellet.rect):
+                if attack.rect.colliderect(pellet.rect) and pellet.name == "player":
                     PelletExplode(
                         pellet,
                         self.hit_explosion_group,
@@ -146,30 +149,29 @@ class Gameplay:
     def queue_attacks(self, events: pg.event.get):
         for ev in events:
             if ev.type == self.ATTACK_EVENT:
-                if bool(self.boss_group):  # Skull Idle
+                if self.first_level:  # Skull Idle
                     attack_type = random.choice(list(AttackType))
                     if attack_type == AttackType.BULL:
                         Bull(self.attack_group, self.bull_frames)
                     elif attack_type == AttackType.TACO:
                         Taco(self.attack_group, self.taco_img, self.cheese_img)
                 else:  # Skull Active
-                    spawn = (
+                    fireball_spawn = (
                         self.active_skull.rect.centerx,
                         self.active_skull.rect.centery + 24,
                     )
-                    distance = random.choice((20, 95, 175, 240)) + 24  # Center target
+                    target_position = random.choice((20, 95, 175, 240)) + 24  # Center target
                     Pellet(
                         self.pellet_group,
-                        spawn,
+                        fireball_spawn,
                         self.fireball_image,
-                        distance,
+                        target_position,
                         turn_speed=2,
                         move_method="parabolic",
+                        name="fireball",
                     )  # Fireball
 
-            elif ev.type == self.RAIN_EVENT and not bool(
-                self.boss_group
-            ):  # Rain Particles
+            elif ev.type == self.RAIN_EVENT and not self.first_level:  # Rain Particles
                 for i in range(50):
                     Rain(self.rain_group)
 
@@ -186,16 +188,19 @@ class Gameplay:
 
         # Background Update
         self.background.update(dt)
-        self.background.draw(screen, bool(self.boss_group))
+        self.background.draw(screen, self.first_level)
 
         # Maraca/Skull Update
-        if g := self.boss_group:
-            sorted_bosses = sorted(g.sprites(), key=lambda m: m.pos.z)
+        if self.first_level:
+            sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
             for boss in sorted_bosses:
                 boss.update(dt)
                 boss.draw(screen)
-                if len(g) == 1:
+                if len(self.boss_group) == 1:
                     boss.kill()
+                    self.first_level = False
+                    self.boss_group.add(self.active_skull.heart)
+                    HealthBar(self.UI_group, (0, 0), "left", self.active_skull.heart, width=WIN_WIDTH)
         else:
             screen.blit(self.tint_surf, (0, 0))
 
@@ -239,5 +244,4 @@ class Gameplay:
             expl.draw(screen)
 
         # UI Update
-        for UI in self.UI_group:
-            UI.draw(screen)
+        [UI.draw(screen) for UI in self.UI_group]

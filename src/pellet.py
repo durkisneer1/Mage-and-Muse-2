@@ -12,9 +12,11 @@ class Pellet(pg.sprite.Sprite):
         dest: tuple[int, int] | float,
         turn_speed: int = 1,
         move_method: str = "linear",
+        name: str = "player",
     ):
         super().__init__(groups)
 
+        self.name = name
         self.move_method = move_method
         self.speed = 20
         self.gravity = 3
@@ -24,7 +26,7 @@ class Pellet(pg.sprite.Sprite):
             (spawn_pos[1] + 5) - img.get_height() / 2,
         )
         self.img = img
-        self.rect = pg.FRect(self.img.get_rect(topleft=self.pos))
+        self.rect = self.img.get_frect(topleft=self.pos)
 
         if self.move_method == "linear":
             self.vel = self.linear_direction(dest)
