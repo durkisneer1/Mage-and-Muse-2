@@ -1,6 +1,6 @@
 import pygame as pg
 from src.constants import WIN_WIDTH, WIN_HEIGHT
-from src.utils import import_folder
+from src.utils import import_folder, import_image
 
 
 class Background:
@@ -10,6 +10,7 @@ class Background:
             pg.image.load("./res/desert/SandFG.png").convert_alpha(),
             pg.image.load("./res/desert/Clouds.png").convert_alpha(),
         )
+
         self.sky_anim_list = import_folder("./res/desert/sky", False)
         self.sky_img = self.sky_anim_list[0]
         self.max_sky_frames = len(self.sky_anim_list)

@@ -66,8 +66,7 @@ class Taco(pg.sprite.Sprite):
             self.kill()
 
     def draw(self, screen: pg.Surface):
-        for cheese in self.cheese_group:
-            cheese.draw(screen)
+        screen.fblits([(cheese.rot_img, cheese.pos) for cheese in self.cheese_group])
         screen.blit(self.rot_img, self.rect)
         self.draw_hitbox()
 
@@ -83,6 +82,7 @@ class Cheese(pg.sprite.Sprite):
         super().__init__(group)
 
         self.img = image
+        self.rot_img = image
         self.pos = spawn_pos
         self.fall_speed = random.randint(10, 20)
         self.momentum_speed = 5
@@ -104,6 +104,4 @@ class Cheese(pg.sprite.Sprite):
 
         self.angle += dt * self.turn_direction * 20
 
-    def draw(self, screen: pg.Surface):
-        rot_img = pg.transform.rotate(self.img, self.angle)
-        screen.blit(rot_img, self.pos)
+        self.rot_img = pg.transform.rotate(self.img, self.angle)

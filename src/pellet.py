@@ -78,9 +78,6 @@ class Pellet(pg.sprite.Sprite):
         ):
             self.kill()
 
-    def draw(self, screen: pg.Surface):
-        screen.blit(self.img, self.pos)
-
 
 class PelletExplode(pg.sprite.Sprite):
     def __init__(
@@ -109,6 +106,3 @@ class PelletExplode(pg.sprite.Sprite):
             self.kill()
             return
         self.img = self.anim_frames[int(self.current_frame)]
-
-    def draw(self, screen: pg.Surface):
-        screen.blit(self.img, self.pos)

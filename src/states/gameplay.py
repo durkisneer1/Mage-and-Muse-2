@@ -17,7 +17,10 @@ from src.rain import Rain
 
 
 class Gameplay:
-    def __init__(self):
+    def __init__(self, main):
+        # Main Setup
+        self.main = main
+
         # Level Setup Setup
         self.player = Player()
         self.wand = Wand()
@@ -75,29 +78,22 @@ class Gameplay:
         # Game State
         self.first_level = True
 
-    def user_input(
-        self,
-        events: list[pg.event.Event],
-        mouse_click: tuple[bool, bool, bool],
-        mouse_pos: tuple[int, int],
-        dt: float,
-        *args,  # NOQA
-    ) -> str:
-        for ev in events:
+    def user_input(self, *args) -> str:  # NOQA
+        for ev in self.main.events:
             if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
                 return "pause"
         if self.player.health <= 0:
             return "exit"
 
-        self.pellet_delay += dt
+        self.pellet_delay += self.main.dt
         self.pellet_delay = min(self.pellet_delay, self.max_delay)
 
-        if mouse_click[0] and self.pellet_delay >= self.max_delay:
+        if self.main.mouse_click[0] and self.pellet_delay >= self.max_delay:
             Pellet(
                 self.pellet_group,
                 self.player.rect.center,
                 self.pellet_img,
-                mouse_pos,
+                self.main.mouse_pos,
             )
             self.pellet_delay = 0
 
@@ -146,8 +142,8 @@ class Gameplay:
                     )
                     attack.hit()
 
-    def queue_attacks(self, events: pg.event.get):
-        for ev in events:
+    def queue_attacks(self):
+        for ev in self.main.events:
             if ev.type == self.ATTACK_EVENT:
                 if self.first_level:  # Skull Idle
                     attack_type = random.choice(list(AttackType))
@@ -175,16 +171,14 @@ class Gameplay:
                 for i in range(50):
                     Rain(self.rain_group)
 
-    def update(
-        self,
-        screen: pg.Surface,
-        keys: pg.key.get_pressed,
-        mouse_pos: tuple[int, int],
-        events: pg.event.get,
-        dt: float,
-    ):
+    def update(self, *args):  # NOQA
         self.collision()
-        self.queue_attacks(events)
+        self.queue_attacks()
+
+        dt = self.main.dt
+        screen = self.main.screen
+        keys = self.main.keys
+        mouse_pos = self.main.mouse_pos
 
         # Background Update
         self.background.update(dt)
@@ -211,7 +205,7 @@ class Gameplay:
             # Rain Update
             for rain in self.rain_group:
                 rain.update(dt)
-                rain.draw(screen)
+            screen.fblits([(rain.img, rain.pos) for rain in self.rain_group])
 
         # Player Update
         self.player.update(dt, keys)
@@ -237,11 +231,13 @@ class Gameplay:
             elif pellet.move_method == "parabolic":
                 if pellet.parabolic_update(dt):
                     TrainFire(self.attack_group, self.ground_fire_frames, pellet.pos.x)
-            pellet.draw(screen)
+        screen.fblits([(pellet.img, pellet.pos) for pellet in self.pellet_group])
 
+        # Hit Explosion Update
         for expl in self.hit_explosion_group:
             expl.update(dt)
-            expl.draw(screen)
+        screen.fblits([(expl.img, expl.pos) for expl in self.hit_explosion_group])
 
         # UI Update
-        [UI.draw(screen) for UI in self.UI_group]
+        for UI in self.UI_group:
+            UI.draw(screen)

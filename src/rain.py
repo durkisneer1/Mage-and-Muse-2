@@ -37,6 +37,3 @@ class Rain(pg.sprite.Sprite):
         self.pos.x += self.momentum * dt
         if self.pos.y > WIN_HEIGHT or self.pos.x > WIN_WIDTH:
             self.kill()
-
-    def draw(self, screen: pg.Surface):
-        screen.blit(self.img, self.pos)

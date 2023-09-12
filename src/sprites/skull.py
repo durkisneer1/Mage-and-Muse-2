@@ -16,7 +16,7 @@ class Skull(pg.sprite.Sprite):
     ):
         super().__init__(group) if group else super().__init__()
 
-        self.img = pg.image.load(image_dir).convert_alpha()
+        self.img = import_image(image_dir)
         self.x_offset, self.y_offset = (
             WIN_WIDTH / 2,
             WIN_HEIGHT / 2 - 17,
