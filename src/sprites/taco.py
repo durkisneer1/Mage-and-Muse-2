@@ -9,10 +9,11 @@ class Taco(pg.sprite.Sprite):
         self, group: pg.sprite.Group, taco_image: pg.Surface, cheese_image: pg.Surface
     ):
         super().__init__(group)
-        self.cheese_img = cheese_image
 
+        self.cheese_img = cheese_image
         self.taco_img = taco_image
         self.rot_img = self.taco_img.copy()
+
         self.side = random.choice(["left", "right"])
         if self.side == "right":
             self.taco_img = pg.transform.flip(self.taco_img, True, False)

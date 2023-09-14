@@ -5,7 +5,6 @@ from src.constants import *
 
 
 class Rain(pg.sprite.Sprite):
-    rain_surf = pg.Surface((1, 4))
     rain_colors = (
         (55, 148, 110),
         (50, 60, 57),
@@ -25,7 +24,7 @@ class Rain(pg.sprite.Sprite):
     ):
         super().__init__(group)
 
-        self.img = self.rain_surf.copy()
+        self.img = pg.Surface((1, 4))
         self.img.fill(random.choice(self.rain_colors))
         self.rect = self.img.get_frect()
         self.pos = pg.Vector2(random.randint(-150, 800), 0)

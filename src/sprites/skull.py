@@ -8,7 +8,7 @@ class Skull(pg.sprite.Sprite):
     def __init__(
         self,
         group: pg.sprite.Group | None,
-        image_dir: str,
+        image: pg.Surface,
         eye_frames: list[pg.Surface],
         amplitude: float,
         eye_offset: int,
@@ -16,7 +16,7 @@ class Skull(pg.sprite.Sprite):
     ):
         super().__init__(group) if group else super().__init__()
 
-        self.img = import_image(image_dir)
+        self.img = image
         self.x_offset, self.y_offset = (
             WIN_WIDTH / 2,
             WIN_HEIGHT / 2 - 17,
@@ -26,14 +26,14 @@ class Skull(pg.sprite.Sprite):
 
         self.eye_offset = eye_offset
         self.eye_frames = eye_frames
-        self.eye_pos = [
+        self.eye_pos = (
             pg.Vector2(
                 self.x_offset - self.img.get_width() / 4, self.img.get_height() + 15
             ),
             pg.Vector2(
                 self.x_offset + self.img.get_width() / 4, self.img.get_height() + 15
             ),
-        ]
+        )
         self.current_frame = 0
         self.current_flower = self.eye_frames[int(self.current_frame)]
         self.max_frames = len(self.eye_frames)

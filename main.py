@@ -5,6 +5,7 @@ from src.states.gameplay import Gameplay
 from src.states.pause import Pause
 from src.states.title import Title
 from src.states.controls import Controls
+from src.textures import Textures
 
 
 class Main:
@@ -14,12 +15,13 @@ class Main:
         self.screen = pg.display.set_mode(WIN_SIZE, pg.SCALED)  # pg.FULLSCREEN
         self.clock = pg.time.Clock()
         self.font = pg.Font("res/fonts/arcade_in.ttf", 32)
+        self.tex = Textures()
 
         self.game_states = {
-            "title": Title(self.font),
-            "controls": Controls(self.font),
+            "title": Title(self),
+            "controls": Controls(self),
             "gameplay": None,  # Gameplay(screen, font)
-            "pause": Pause(self.font),
+            "pause": Pause(self),
             "lose": None,
             "win": None,
         }
@@ -40,15 +42,18 @@ class Main:
             print(f"FPS: {k}\t{100 * fps_tracker[k] / total:.2f}%")
         pg.quit()
 
+    def update(self):
+        self.dt = self.clock.tick() / 100
+        self.keys = pg.key.get_pressed()
+        self.mouse_click = pg.mouse.get_pressed()
+        self.mouse_pos = pg.mouse.get_pos()
+        self.events = pg.event.get()
+
     def run(self) -> None:
         current_state = self.game_states["title"]
         fps_tracker = {}
         while True:
-            self.dt = self.clock.tick() / 100
-            self.keys = pg.key.get_pressed()
-            self.mouse_click = pg.mouse.get_pressed()
-            self.mouse_pos = pg.mouse.get_pos()
-            self.events = pg.event.get()
+            self.update()
 
             if current_state == self.game_states["gameplay"]:
                 fps = int(self.clock.get_fps())
@@ -59,20 +64,18 @@ class Main:
                     Main.end_game(fps_tracker)
                     return
 
-            if s := current_state.user_input(
-                self.events, self.mouse_click, self.mouse_pos, self.dt, self.mouse_click
-            ):
+            if s := current_state.user_input():
                 if s == "exit":
                     Main.end_game(fps_tracker)
                     return
 
                 if s == "gameplay" and current_state == self.game_states["title"]:
-                    self.game_states[s] = Gameplay()
+                    self.game_states[s] = Gameplay(self)
                 current_state = self.game_states[s]
                 if s == "pause" or s == "controls":
                     current_state.last_frame = self.screen.copy()
 
-            current_state.update(self.screen, self.keys, self.mouse_pos, self.events, self.dt)
+            current_state.update()
             pg.display.flip()
 
 

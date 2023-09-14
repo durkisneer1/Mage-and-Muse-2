@@ -5,8 +5,8 @@ from src.constants import *
 
 
 class Train:
-    def __init__(self):
-        self.img = pg.image.load("./res/train/Train.png").convert_alpha()
+    def __init__(self, image: pg.Surface):
+        self.img = image
 
         x_offset = -8
         self.pos = pg.Vector2(x_offset, WIN_HEIGHT - self.img.get_height())

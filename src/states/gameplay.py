@@ -2,10 +2,9 @@ import pygame as pg
 import random
 
 from src.constants import *
-from src.utils import import_folder
 from src.background import Background
 from src.train import Train, TrainFire
-from src.enums import AttackType, Images
+from src.enums import AttackType
 from src.sprites.player import Player, Wand
 from src.sprites.maraca import Maraca
 from src.sprites.bull import Bull
@@ -25,11 +24,7 @@ class Gameplay:
         self.player = Player()
         self.wand = Wand()
         self.background = Background()
-        self.train = Train()
-
-        # Fire Setup
-        self.fireball_image = pg.image.load(Images.fireball_img).convert_alpha()
-        self.ground_fire_frames = import_folder(Images.ground_fire_frames, scale=1.5)
+        self.train = Train(main.tex.train_img)
 
         # Tint Setup
         self.tint_surf = pg.Surface(WIN_SIZE, pg.SRCALPHA)
@@ -46,28 +41,21 @@ class Gameplay:
         maraca_right = Maraca(self.boss_group, False)
 
         # Skull Setup
-        flower_frames = import_folder(Images.flower_frames)
-        fire_eye_frames = import_folder(Images.fire_eye_frames, scale=1.5)
-        Skull(self.boss_group, Images.idle_skull_img, flower_frames, 15, 3)
+        Skull(self.boss_group, main.tex.idle_skull_img, main.tex.flower_frames, 15, 3)
         self.active_skull = Skull(
-            None, Images.active_skull_img, fire_eye_frames, 12, 20, True
+            None, main.tex.active_skull_img, main.tex.fire_eye_frames, 12, 20, True
         )
 
         # Attacks Setup
         self.ATTACK_EVENT = pg.event.custom_type()
         pg.time.set_timer(self.ATTACK_EVENT, 2000)
         self.attack_group = pg.sprite.Group()
-        self.bull_frames = import_folder(Images.bull_frames)
-        self.taco_img = pg.image.load(Images.taco_img).convert_alpha()
-        self.cheese_img = pg.image.load(Images.cheese_img).convert()
 
         # Pellet Setup
         self.max_delay = 2.5
         self.pellet_delay = self.max_delay
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
-        self.pellet_img = pg.image.load(Images.pellet_img).convert()
-        self.pellet_frames = import_folder(Images.pellet_frames)
 
         # UI Setup
         self.UI_group = pg.sprite.Group()
@@ -78,7 +66,7 @@ class Gameplay:
         # Game State
         self.first_level = True
 
-    def user_input(self, *args) -> str:  # NOQA
+    def user_input(self) -> str:
         for ev in self.main.events:
             if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
                 return "pause"
@@ -92,7 +80,7 @@ class Gameplay:
             Pellet(
                 self.pellet_group,
                 self.player.rect.center,
-                self.pellet_img,
+                self.main.tex.pellet_img,
                 self.main.mouse_pos,
             )
             self.pellet_delay = 0
@@ -119,7 +107,7 @@ class Gameplay:
                         pellet,
                         self.hit_explosion_group,
                         pellet.pos.copy(),
-                        self.pellet_frames,
+                        self.main.tex.pellet_frames,
                     )
                     self.adjust_ui(boss)
 
@@ -138,7 +126,7 @@ class Gameplay:
                         pellet,
                         self.hit_explosion_group,
                         pellet.pos.copy(),
-                        self.pellet_frames,
+                        self.main.tex.pellet_frames,
                     )
                     attack.hit()
 
@@ -148,9 +136,9 @@ class Gameplay:
                 if self.first_level:  # Skull Idle
                     attack_type = random.choice(list(AttackType))
                     if attack_type == AttackType.BULL:
-                        Bull(self.attack_group, self.bull_frames)
+                        Bull(self.attack_group, self.main.tex.bull_frames)
                     elif attack_type == AttackType.TACO:
-                        Taco(self.attack_group, self.taco_img, self.cheese_img)
+                        Taco(self.attack_group, self.main.tex.taco_img, self.main.tex.cheese_img)
                 else:  # Skull Active
                     fireball_spawn = (
                         self.active_skull.rect.centerx,
@@ -160,7 +148,7 @@ class Gameplay:
                     Pellet(
                         self.pellet_group,
                         fireball_spawn,
-                        self.fireball_image,
+                        self.main.tex.fireball_img,
                         target_position,
                         turn_speed=2,
                         move_method="parabolic",
@@ -171,7 +159,7 @@ class Gameplay:
                 for i in range(50):
                     Rain(self.rain_group)
 
-    def update(self, *args):  # NOQA
+    def update(self):
         self.collision()
         self.queue_attacks()
 
@@ -230,7 +218,7 @@ class Gameplay:
                 pellet.linear_update(dt)
             elif pellet.move_method == "parabolic":
                 if pellet.parabolic_update(dt):
-                    TrainFire(self.attack_group, self.ground_fire_frames, pellet.pos.x)
+                    TrainFire(self.attack_group, self.main.tex.ground_fire_frames, pellet.pos.x)
         screen.fblits([(pellet.img, pellet.pos) for pellet in self.pellet_group])
 
         # Hit Explosion Update
