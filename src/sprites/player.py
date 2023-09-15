@@ -39,7 +39,7 @@ class Player:
         self.in_air = False
         self.air_time = 0
 
-        self.health = 5  # default set 5
+        self.health = 50  # default set 5
 
     def animate(self, dt: float):
         self.current_frame %= len(self.frame_list)

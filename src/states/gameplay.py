@@ -4,15 +4,17 @@ import random
 from src.constants import *
 from src.background import Background
 from src.train import Train, TrainFire
-from src.enums import AttackType
+from src.enums import LevelOneAttack, LevelTwoAttack
+from src.pellet import Pellet, PelletExplode
+from src.UI import HealthBar, PlayerHealth
+from src.rain import Rain
+
 from src.sprites.player import Player, Wand
 from src.sprites.maraca import Maraca
 from src.sprites.bull import Bull
-from src.pellet import Pellet, PelletExplode
 from src.sprites.skull import Skull
 from src.sprites.taco import Taco
-from src.UI import HealthBar, PlayerHealth
-from src.rain import Rain
+from src.sprites.trumpet import Trumpet
 
 
 class Gameplay:
@@ -133,27 +135,33 @@ class Gameplay:
     def queue_attacks(self):
         for ev in self.main.events:
             if ev.type == self.ATTACK_EVENT:
-                if self.first_level:  # Skull Idle
-                    attack_type = random.choice(list(AttackType))
-                    if attack_type == AttackType.BULL:
+                if self.first_level:  # Level One Queue
+                    attack_type = random.choice(list(LevelOneAttack))
+                    if attack_type == LevelOneAttack.BULL:
                         Bull(self.attack_group, self.main.tex.bull_frames)
-                    elif attack_type == AttackType.TACO:
+                    elif attack_type == LevelOneAttack.TACO:
                         Taco(self.attack_group, self.main.tex.taco_img, self.main.tex.cheese_img)
-                else:  # Skull Active
-                    fireball_spawn = (
-                        self.active_skull.rect.centerx,
-                        self.active_skull.rect.centery + 24,
-                    )
-                    target_position = random.choice((20, 95, 175, 240)) + 24  # Center target
-                    Pellet(
-                        self.pellet_group,
-                        fireball_spawn,
-                        self.main.tex.fireball_img,
-                        target_position,
-                        turn_speed=2,
-                        move_method="parabolic",
-                        name="fireball",
-                    )  # Fireball
+                    elif attack_type == LevelOneAttack.TRUMPET:
+                        Trumpet(self.attack_group, self.main.tex.trumpet_img, self.player.pos.xy)
+                else:  # Level Two Queue
+                    attack_type = random.choice(list(LevelTwoAttack))
+                    if attack_type == LevelTwoAttack.FIREBALL:
+                        fireball_spawn = (
+                            self.active_skull.rect.centerx,
+                            self.active_skull.rect.centery + 24,
+                        )
+                        target_position = random.choice((20, 95, 175, 240)) + 24  # Center target
+                        Pellet(
+                            self.pellet_group,
+                            fireball_spawn,
+                            self.main.tex.fireball_img,
+                            target_position,
+                            turn_speed=2,
+                            move_method="parabolic",
+                            name="fireball",
+                        )  # Fireball
+                    else:
+                        pass
 
             elif ev.type == self.RAIN_EVENT and not self.first_level:  # Rain Particles
                 for i in range(50):

@@ -16,6 +16,7 @@ class Textures:
         self.active_skull_img = import_image("./res/skull/active.png")
         self.fireball_img = import_image("./res/skull/fireball/fireball.png")
         self.train_img = import_image("./res/train/Train.png")
+        self.trumpet_img = import_image("./res/trumpet/1.png")
         self.window_img = import_image("./res/interface/pause_window.png", is_alpha=False)
         self.cheese_img = import_image("./res/taco/cheese.png", is_alpha=False)
         self.pellet_img = import_image("./res/weapon/projectile/Projectile.png", is_alpha=False)
