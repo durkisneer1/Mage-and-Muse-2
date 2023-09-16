@@ -136,8 +136,8 @@ class Gameplay:
         for ev in self.main.events:
             if ev.type == self.ATTACK_EVENT:
                 if self.first_level:  # Level One Queue
-                    attack_type = random.choice(list(LevelOneAttack))
-                    print(attack_type)
+                    # attack_type = random.choice(list(LevelOneAttack))
+                    attack_type = LevelOneAttack.TAMBOURINE
                     if attack_type == LevelOneAttack.BULL:
                         Bull(self.attack_group, self.main.tex.bull_frames)
                     elif attack_type == LevelOneAttack.TACO:

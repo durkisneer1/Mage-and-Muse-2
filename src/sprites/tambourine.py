@@ -11,11 +11,9 @@ class Tambourine(pg.sprite.Sprite):
         self.rot_direction = -1 if self.left else 1
         self.pos = pg.Vector2(0 if self.left else WIN_WIDTH, 0)
         
-        self.velocity = 10
-        # speed by which the velocity decreases
-        self.velocity_speed = 0.15
-        # point at which velocity is too small
-        self.velocity_limit = 5
+        self.direction = pg.Vector2(1, 0)
+        self.velocity = 18
+        self.turn_decay = 0
 
         self.image = image
         self.rot_image = image.copy()
@@ -37,16 +35,14 @@ class Tambourine(pg.sprite.Sprite):
     def update(self, dt: float, player_pos: pg.Vector2):
         self.rotate(dt)
 
-        self.rect = self.rot_image.get_frect(center=self.pos)
-        
-        # decrease the velocity
-        self.velocity -= self.velocity_speed * dt
-        # when the velocity becomes too small
-        if self.velocity <= self.velocity_limit:
-            self.kill()
         # move the tambourine to the player
-        self.pos.move_towards_ip(player_pos, self.velocity * dt)
-        
+        angle_to_player = (player_pos - self.pos).as_polar()[1] - self.direction.as_polar()[1]
+        angle_delta = angle_to_player - (angle_to_player * self.turn_decay)
+        self.direction.rotate_ip(angle_delta)
+        self.pos += self.direction * self.velocity * dt
+        self.turn_decay = min(self.turn_decay + dt / 10, 1)
+
+        self.rect = self.rot_image.get_frect(center=self.pos)
         self.hitbox.center = self.rect.center = self.pos
 
     def draw(self, screen: pg.Surface):
