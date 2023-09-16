@@ -143,7 +143,7 @@ class Gameplay:
                     elif attack_type == LevelOneAttack.TACO:
                         Taco(self.attack_group, self.main.tex.taco_img, self.main.tex.cheese_img)
                     elif attack_type == LevelOneAttack.TAMBOURINE:
-                        Tambourine(self.attack_group, self.main.tex.tambourine_img, self.player.pos.xy)
+                        Tambourine(self.attack_group, self.main.tex.tambourine_img)
                 else:  # Level Two Queue
                     attack_type = random.choice(list(LevelTwoAttack))
                     if attack_type == LevelTwoAttack.FIREBALL:
@@ -221,7 +221,7 @@ class Gameplay:
 
         # Bull Update
         for attack in self.attack_group:
-            attack.update(dt)
+            attack.update(dt, self.player.pos)
             attack.draw(screen)
 
         # Pellet Update
