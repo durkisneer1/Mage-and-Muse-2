@@ -30,13 +30,16 @@ class Taco(pg.sprite.Sprite):
         self.angle = 0
 
         self.cheese_group = pg.sprite.Group()
+        Cheese(self.cheese_group, self.cheese_img, self.pos.copy(), self.side)
         self.old_tick = 0
 
         self.space = self.speed * 2
         self.hitbox = pg.FRect((self.pos.x - self.space, 0), (1, WIN_HEIGHT))
 
     def hit(self):
-        self.health -= 1; self.kill() if self.health == 0 else None
+        self.health -= 1
+        if self.health == 0:
+            self.kill()
 
     def throw_cheese(self):
         current_tick = pg.time.get_ticks() // 50

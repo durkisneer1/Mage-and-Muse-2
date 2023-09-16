@@ -25,7 +25,7 @@ class Maraca(pg.sprite.Sprite):
         self.current_frame = 0
         self.multiplier = 1 if brother else -1
         self.speed = 6 * self.multiplier
-        self.health = 50  # Default 50
+        self.health = 5  # Default 50
 
         self.hit_time = 0
         self.animate_death = False

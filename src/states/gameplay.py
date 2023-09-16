@@ -14,7 +14,7 @@ from src.sprites.maraca import Maraca
 from src.sprites.bull import Bull
 from src.sprites.skull import Skull
 from src.sprites.taco import Taco
-from src.sprites.trumpet import Trumpet
+from src.sprites.tambourine import Tambourine
 
 
 class Gameplay:
@@ -50,8 +50,8 @@ class Gameplay:
 
         # Attacks Setup
         self.ATTACK_EVENT = pg.event.custom_type()
-        pg.time.set_timer(self.ATTACK_EVENT, 2000)
         self.attack_group = pg.sprite.Group()
+        pg.time.set_timer(self.ATTACK_EVENT, 2000)
 
         # Pellet Setup
         self.max_delay = 2.5
@@ -137,12 +137,13 @@ class Gameplay:
             if ev.type == self.ATTACK_EVENT:
                 if self.first_level:  # Level One Queue
                     attack_type = random.choice(list(LevelOneAttack))
+                    print(attack_type)
                     if attack_type == LevelOneAttack.BULL:
                         Bull(self.attack_group, self.main.tex.bull_frames)
                     elif attack_type == LevelOneAttack.TACO:
                         Taco(self.attack_group, self.main.tex.taco_img, self.main.tex.cheese_img)
-                    elif attack_type == LevelOneAttack.TRUMPET:
-                        Trumpet(self.attack_group, self.main.tex.trumpet_img, self.player.pos.xy)
+                    elif attack_type == LevelOneAttack.TAMBOURINE:
+                        Tambourine(self.attack_group, self.main.tex.tambourine_img, self.player.pos.xy)
                 else:  # Level Two Queue
                     attack_type = random.choice(list(LevelTwoAttack))
                     if attack_type == LevelTwoAttack.FIREBALL:
@@ -186,9 +187,12 @@ class Gameplay:
             for boss in sorted_bosses:
                 boss.update(dt)
                 boss.draw(screen)
+
+                # Start Level Two
                 if len(self.boss_group) == 1:
                     boss.kill()
                     self.first_level = False
+                    pg.time.set_timer(self.ATTACK_EVENT, 1500)
                     self.boss_group.add(self.active_skull.heart)
                     HealthBar(self.UI_group, (0, 0), "left", self.active_skull.heart, width=WIN_WIDTH)
         else:
