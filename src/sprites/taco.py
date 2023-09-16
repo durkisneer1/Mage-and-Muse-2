@@ -52,7 +52,7 @@ class Taco(pg.sprite.Sprite):
     def draw_hitbox(self):
         self.hitbox.topleft = (self.pos.x - self.space, 0)
 
-    def update(self, dt: float):
+    def update(self, dt: float, *args):
         self.pos.x += self.speed * dt
         self.angle += dt * 100
         self.angle %= 360

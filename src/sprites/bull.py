@@ -43,7 +43,7 @@ class Bull(pg.sprite.Sprite):
         if self.health == 0:
             self.kill()
 
-    def update(self, dt: float) -> None:
+    def update(self, dt: float, *args) -> None:
         self.animate(dt)
 
         if self.side == "left":
