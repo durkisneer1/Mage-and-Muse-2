@@ -57,7 +57,7 @@ class TrainFire(pg.sprite.Sprite):
 
         self.loops = 0
 
-    def update(self, dt: float):
+    def update(self, dt: float, *args):
         if self.current_frame >= self.max_frames:
             self.current_frame = 0
             self.loops += 1
