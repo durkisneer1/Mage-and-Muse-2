@@ -1,6 +1,6 @@
 import pygame as pg
 from random import choice
-from src.constants import WIN_WIDTH
+from src.constants import WIN_WIDTH, WIN_HEIGHT
 
 
 class Tambourine(pg.sprite.Sprite):
@@ -11,9 +11,10 @@ class Tambourine(pg.sprite.Sprite):
         self.rot_direction = -1 if self.left else 1
         self.pos = pg.Vector2(0 if self.left else WIN_WIDTH, 0)
 
+        self.direction = pg.Vector2(-self.rot_direction, 1).normalize()
+
         self.velocity = 18
-        self.direction = pg.Vector2(1, 0)
-        self.turning_speed = 1
+        self.max_angle_change = 40
 
         self.image = image
         self.rot_image = image.copy()
@@ -21,8 +22,6 @@ class Tambourine(pg.sprite.Sprite):
         self.hitbox = self.rect.inflate(-8, -8)
         self.angle = 0
         self.health = 2
-
-        self.track_timer = 0
 
     def hit(self):
         self.health -= 1
@@ -37,29 +36,20 @@ class Tambourine(pg.sprite.Sprite):
     def update(self, dt: float, player_pos: pg.Vector2):
         self.rotate(dt)
 
-        # angle_to_player = (player_pos - self.pos).as_polar()[1]
-        # angle_delta = angle_to_player - self.direction.as_polar()[1]
-        # angle_delta = max(angle_delta, 30)
-        #
-        # turning = 0
-        # if angle_delta > 0:
-        #     turning = -1
-        # elif angle_delta < 0:
-        #     turning = 1
-        #
-        # self.direction.rotate_ip(angle_delta * turning * self.turning_speed * dt)
-        # self.pos += self.direction * self.velocity * dt
+        angle_to_player = (player_pos - self.pos).as_polar()[1] - self.direction.as_polar()[1]
 
-        self.track_timer += dt
-        if self.track_timer < 10:
-            self.pos.move_towards_ip(player_pos, self.velocity * dt)
-            if vec := player_pos - self.pos:
-                self.direction = vec.normalize()
-        else:
-            self.pos += self.direction * self.velocity * dt
+        if self.pos.y < WIN_HEIGHT / 2:
+            if abs(angle_to_player) > (a := self.max_angle_change * dt):
+                angle_to_player = a if angle_to_player > 0 else -a
+            self.direction.rotate_ip(angle_to_player)
 
+        self.pos += self.direction * self.velocity * dt
         self.rect = self.rot_image.get_frect(center=self.pos)
         self.hitbox.center = self.rect.center = self.pos
+
+        if not (-self.rect.w < self.rect.top < WIN_WIDTH + self.rect.w and
+                -self.rect.h < self.rect.top < WIN_HEIGHT):
+            self.kill()
 
     def draw(self, screen: pg.Surface):
         screen.blit(self.rot_image, self.rect)

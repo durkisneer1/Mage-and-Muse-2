@@ -100,7 +100,7 @@ class Heart(pg.sprite.Sprite):
         self.offset = pg.Vector2(0, -27)
 
         self.SPEED = 35
-        self.health = 150  # Default 150
+        self.health = 50  # Default 150
         self.hit_time = 0
 
     def hit(self):
