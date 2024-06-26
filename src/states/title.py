@@ -1,6 +1,7 @@
 import pygame as pg
 from src.constants import *
 from src.button import Button
+from src.enums import States
 
 
 class Title:
@@ -16,15 +17,16 @@ class Title:
         )
         self.exit_button = Button((WIN_WIDTH / 2, WIN_HEIGHT / 2 + 40), "Exit", main.font)
 
-    def user_input(self) -> str:
-        for ev in self.main.events:
-            if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
-                if self.start_button.check_collision(ev.pos):
-                    return "gameplay"
-                elif self.controls_button.check_collision(ev.pos):
-                    return "controls"
-                elif self.exit_button.check_collision(ev.pos):
-                    return "exit"
+    def user_input(self, event) -> States | None:
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
+            if self.start_button.check_collision(event.pos):
+                return States.GAMEPLAY
+            elif self.controls_button.check_collision(event.pos):
+                return States.CONTROLS
+            elif self.exit_button.check_collision(event.pos):
+                return States.EXIT
+
+        return None
 
     def update(self):
         self.main.screen.blit(self.bg_img, (0, 0))

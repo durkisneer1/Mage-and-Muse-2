@@ -4,7 +4,7 @@ import pygame as pg
 class Button:
     def __init__(
         self,
-        pos: tuple[int, int] | pg.Vector2,
+        pos: tuple[float, float] | pg.Vector2,
         text: str,
         font: pg.font.Font,
         scale_factor: float = 1.0,
@@ -21,7 +21,7 @@ class Button:
         self.rect_top = self.text_top.get_frect(center=self.pos)
         self.rect_bottom = self.text_bottom.get_frect(center=self.pos + offset)
 
-    def check_collision(self, mouse_pos: tuple[int, int]) -> bool:
+    def check_collision(self, mouse_pos: tuple[float, float]) -> bool:
         return self.rect_top.collidepoint(mouse_pos)
 
     def draw(self, screen: pg.Surface, *args):

@@ -2,9 +2,9 @@ import pygame as pg
 import random
 
 from src.constants import *
+from src.enums import *
 from src.background import Background
 from src.train import Train, TrainFire
-from src.enums import LevelOneAttack, LevelTwoAttack
 from src.pellet import Pellet, PelletExplode
 from src.UI import HealthBar, PlayerHealth
 from src.rain import Rain
@@ -54,7 +54,7 @@ class Gameplay:
         pg.time.set_timer(self.ATTACK_EVENT, 2000)
 
         # Pellet Setup
-        self.max_delay = 2.5
+        self.max_delay = 2.5  # 0.25 seconds
         self.pellet_delay = self.max_delay
         self.hit_explosion_group = pg.sprite.Group()
         self.pellet_group = pg.sprite.Group()
@@ -66,28 +66,18 @@ class Gameplay:
         PlayerHealth(self.UI_group, self.player)  # Player Health
 
         # Game State
-        self.first_level = True
+        self.first_level = False
 
-    def user_input(self) -> str:
-        for ev in self.main.events:
-            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
-                return "pause"
+    def user_input(self, event) -> States | None:
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            return States.PAUSE
+
         if self.player.health <= 0:
-            return "exit"
+            return States.EXIT
 
-        self.pellet_delay += self.main.dt
-        self.pellet_delay = min(self.pellet_delay, self.max_delay)
+        return None
 
-        if self.main.mouse_click[0] and self.pellet_delay >= self.max_delay:
-            Pellet(
-                self.pellet_group,
-                self.player.rect.center,
-                self.main.tex.pellet_img,
-                self.main.mouse_pos,
-            )
-            self.pellet_delay = 0
-
-    def adjust_ui(self, target_obj: any) -> None:
+    def adjust_ui(self, target_obj: any):
         target_obj.hit()
         for UI in self.UI_group:
             if UI.target == target_obj:
@@ -101,7 +91,7 @@ class Gameplay:
                     return
                 UI.update(target_obj)
 
-    def collision(self) -> None:
+    def collision(self):
         for boss in self.boss_group:
             for pellet in self.pellet_group:
                 if boss.rect.colliderect(pellet.rect) and boss.pos.z > 0 and pellet.name == "player":
@@ -171,21 +161,26 @@ class Gameplay:
         self.collision()
         self.queue_attacks()
 
-        dt = self.main.dt
-        screen = self.main.screen
-        keys = self.main.keys
-        mouse_pos = self.main.mouse_pos
+        self.pellet_delay += self.main.dt
+        if self.main.mouse_click[0] and self.pellet_delay > self.max_delay:
+            Pellet(
+                self.pellet_group,
+                self.player.rect.center,
+                self.main.tex.pellet_img,
+                self.main.mouse_pos,
+            )
+            self.pellet_delay = 0
 
         # Background Update
-        self.background.update(dt)
-        self.background.draw(screen, self.first_level)
+        self.background.update(self.main.dt)
+        self.background.draw(self.main.screen, self.first_level)
 
         # Maraca/Skull Update
         if self.first_level:
             sorted_bosses = sorted(self.boss_group.sprites(), key=lambda m: m.pos.z)
             for boss in sorted_bosses:
-                boss.update(dt)
-                boss.draw(screen)
+                boss.update(self.main.dt)
+                boss.draw(self.main.screen)
 
                 # Start Level Two
                 if len(self.boss_group) == 1:
@@ -195,48 +190,48 @@ class Gameplay:
                     self.boss_group.add(self.active_skull.heart)
                     HealthBar(self.UI_group, (0, 0), "left", self.active_skull.heart, width=WIN_WIDTH)
         else:
-            screen.blit(self.tint_surf, (0, 0))
+            self.main.screen.blit(self.tint_surf, (0, 0))
 
             # Active Skull Update
-            self.active_skull.update(dt)
-            self.active_skull.draw(screen)
+            self.active_skull.update(self.main.dt)
+            self.active_skull.draw(self.main.screen)
 
             # Rain Update
             for rain in self.rain_group:
-                rain.update(dt)
-            screen.fblits([(rain.img, rain.pos) for rain in self.rain_group])
+                rain.update(self.main.dt)
+            self.main.screen.fblits([(rain.img, rain.pos) for rain in self.rain_group])
 
         # Player Update
-        self.player.update(dt, keys)
-        self.player.draw(screen)
+        self.player.update(self.main.dt, self.main.keys)
+        self.player.draw(self.main.screen)
 
         # Wand Update
-        self.wand.update(self.player.rect.center, mouse_pos)
-        self.wand.draw(screen)
+        self.wand.update(self.player.rect.center, self.main.mouse_pos)
+        self.wand.draw(self.main.screen)
 
         # Train Update
-        self.train.update(dt)
-        self.train.draw(screen)
+        self.train.update(self.main.dt)
+        self.train.draw(self.main.screen)
 
         # Bull Update
         for attack in self.attack_group:
-            attack.update(dt, self.player.pos)
-            attack.draw(screen)
+            attack.update(self.main.dt, self.player.pos)
+            attack.draw(self.main.screen)
 
         # Pellet Update
         for pellet in self.pellet_group:
             if pellet.move_method == "linear":
-                pellet.linear_update(dt)
+                pellet.linear_update(self.main.dt)
             elif pellet.move_method == "parabolic":
-                if pellet.parabolic_update(dt):
+                if pellet.parabolic_update(self.main.dt):
                     TrainFire(self.attack_group, self.main.tex.ground_fire_frames, pellet.pos.x)
-        screen.fblits([(pellet.img, pellet.pos) for pellet in self.pellet_group])
+        self.main.screen.fblits([(pellet.img, pellet.pos) for pellet in self.pellet_group])
 
         # Hit Explosion Update
         for expl in self.hit_explosion_group:
-            expl.update(dt)
-        screen.fblits([(expl.img, expl.pos) for expl in self.hit_explosion_group])
+            expl.update(self.main.dt)
+        self.main.screen.fblits([(expl.img, expl.pos) for expl in self.hit_explosion_group])
 
         # UI Update
         for UI in self.UI_group:
-            UI.draw(screen)
+            UI.draw(self.main.screen)

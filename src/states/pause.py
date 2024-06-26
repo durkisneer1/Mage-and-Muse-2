@@ -1,6 +1,7 @@
 import pygame as pg
 from src.constants import *
 from src.button import Button
+from src.enums import States
 
 
 class Pause:
@@ -20,15 +21,17 @@ class Pause:
         self.menu_button = Button(self.pos + pg.Vector2(0, 40), "Menu", main.font)
         self.resume_button = Button(self.pos + pg.Vector2(0, 60), "Resume", main.font)
 
-    def user_input(self) -> str:
-        for ev in self.main.events:
-            if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
-                if self.menu_button.check_collision(ev.pos):
-                    return "title"
-                elif self.resume_button.check_collision(ev.pos):
-                    return "gameplay"
-            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
-                return "gameplay"
+    def user_input(self, event) -> States | None:
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
+            if self.menu_button.check_collision(event.pos):
+                return States.TITLE
+            elif self.resume_button.check_collision(event.pos):
+                return States.GAMEPLAY
+
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            return States.GAMEPLAY
+
+        return None
 
     def update(self):
         self.main.screen.blit(self.last_frame, (0, 0))

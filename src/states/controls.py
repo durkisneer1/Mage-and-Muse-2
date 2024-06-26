@@ -1,6 +1,7 @@
 import pygame as pg
 from src.constants import *
 from src.button import Button
+from src.enums import States
 
 
 class Controls:
@@ -30,13 +31,15 @@ class Controls:
             0.5,
         )
 
-    def user_input(self) -> str:
-        for ev in self.main.events:
-            if ev.type == pg.MOUSEBUTTONDOWN and ev.button == 1:
-                if self.back_button.check_collision(ev.pos):
-                    return "title"
-            if ev.type == pg.KEYDOWN and ev.key == pg.K_ESCAPE:
-                return "title"
+    def user_input(self, event) -> States | None:
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == pg.BUTTON_LEFT:
+            if self.back_button.check_collision(event.pos):
+                return States.TITLE
+
+        if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+            return States.TITLE
+
+        return None
 
     def update(self):
         self.main.screen.blit(self.last_frame, (0, 0))
